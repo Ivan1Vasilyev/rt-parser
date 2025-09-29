@@ -1,15 +1,29 @@
 {
-  "name": "tariff-parser",
-  "version": "1.0.0",
-  "main": "app.js",
-  "type": "module",
-  "scripts": {},
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "selenium-webdriver": "^4.35.0",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
-  }
+	"name": "tariff-parser",
+	"version": "1.0.0",
+	"scripts": {
+		"start": "npm run build && npm run run",
+		"build:watch": "tsc --watch",
+		"dev:watch": "nodemon --watch 'src/**/*' --ext ts,json --exec ts-node ./src/app.ts",
+		"build": "npx tsc",
+		"run": "node ./dist/app.js"
+	},
+	"ts-node": {
+		"esm": true
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"description": "",
+	"dependencies": {
+		"@types/node": "^24.5.2",
+		"@types/selenium-webdriver": "^4.1.28",
+		"selenium-webdriver": "^4.35.0",
+		"xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+	},
+	"devDependencies": {
+		"nodemon": "^3.1.10",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.9.2"
+	}
 }

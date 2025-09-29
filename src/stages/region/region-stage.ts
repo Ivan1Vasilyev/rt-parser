@@ -1,11 +1,15 @@
-import selectors from '../../utils/selectors.js'
+import { IRegionStage } from './i-region-stage'
+import selectors from '../../utils/selectors'
+import { ICityStage } from '../city/i-city-stage'
+import DriverExtention from '../../extentions/driver/driver-extention'
 
-export default class RegionStage {
-	constructor(cityStage) {
+export default class RegionStage implements IRegionStage {
+	private _cityStage: ICityStage
+	constructor(cityStage: ICityStage) {
 		this._cityStage = cityStage
 	}
 
-	go = async (driver, regionsLength, regionNumber, cityNumber) => {
+	go = async (driver: DriverExtention, regionsLength: number, regionNumber: number | undefined, cityNumber: number | undefined) => {
 		for (let i = 0; i < regionsLength; i++) {
 			if (regionNumber && regionNumber > i) i = regionNumber
 
@@ -39,10 +43,10 @@ export default class RegionStage {
 					continue
 				}
 
-				await this._cityStage.go(driver, citiesLength, cityNumber, regionName, regionNumber, i)
+				await this._cityStage.go(driver, citiesLength, regionName, i, regionNumber, cityNumber)
 
 				console.log(`сбор данных по региону ${regionName} завершён`, `${i + 1} из ${regionsLength}`)
-			} catch (err) {
+			} catch (err: any) {
 				throw { error: err.error || err, regionNumber: i, cityNumber: err.cityNumber || cityNumber }
 			}
 		}

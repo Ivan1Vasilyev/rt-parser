@@ -1,34 +1,51 @@
-import { By, until, Builder, Browser } from 'selenium-webdriver'
+import { By, until, Builder, Browser, ThenableWebDriver, WebElement, Locator, WebElementCondition } from 'selenium-webdriver'
 import chrome from 'selenium-webdriver/chrome.js'
-import selectors from '../utils/selectors.js'
+import selectors from '../../utils/selectors'
+import { IDriverExtention } from './i-driver-extention'
 
-export default class DriverExtention {
-	_asyncDelegats = ['get', 'maximize', 'sleep', 'findElements', 'findElement', 'wait', 'quit', 'refresh', 'perform']
-	_delegats = ['manage', 'navigate', 'window', 'actions', 'scroll']
+export default class DriverExtention implements IDriverExtention {
+	private _driver: ThenableWebDriver
 
 	constructor() {
-		const options = new chrome.Options().setPageLoadStrategy('eager')
+		const options = new chrome.Options()
+		options.setPageLoadStrategy('eager')
 		this._driver = new Builder().forBrowser(Browser.CHROME).setChromeOptions(options).build()
-
-		this._asyncDelegats.forEach(i => (this[i] = async (...args) => this._driver[i](...args)))
-		this._delegats.forEach(i => (this[i] = (...args) => this._driver[i](...args)))
 	}
 
-	findArray = async function (selector, webElement = this) {
+	findElements = async (locator: Locator) => await this._driver.findElements(locator)
+	findElement = async (locator: Locator) => await this._driver.findElement(locator)
+
+	sleep = async (bound: number) => await this._driver.sleep(bound)
+
+	wait = async (condition: WebElementCondition, timeout?: number, message?: string, pollTimeout?: number) =>
+		await this._driver.wait(condition, timeout, message, pollTimeout)
+
+	quit = async () => await this._driver.quit()
+
+	scroll = async (deltaY: number) => await this._driver.executeScript(`window.scrollBy(0, ${deltaY});`)
+
+	refresh = async () => await this._driver.navigate().refresh()
+
+	get = async (url: string) => await this._driver.get(url)
+
+	maximize = async () => await this._driver.manage().window().maximize()
+
+	findArray = async (selector: string, webElement: WebElement | DriverExtention = this) => {
 		const array = [...(await webElement.findElements(By.css(selector)))]
 		return array
 	}
 
-	getText = async selector => {
-		const elems = await this.findArray(selector)
+	getText = async (webElement: WebElement, selector: string) => {
+		const elems = await this.findArray(selector, webElement)
 		if (elems.length) {
 			const text = await elems[0].getText()
 			return text
 		}
+
 		return ''
 	}
 
-	goNextCity = async (region, regionIndex) => {
+	goNextCity = async (region: WebElement, regionIndex?: number) => {
 		await region.click()
 		await this.sleep(3000)
 		await this.waitElementLocated(selectors.cities, 'cities', async () => {
@@ -39,7 +56,7 @@ export default class DriverExtention {
 		})
 	}
 
-	unsafeFind = async (selector, index = 0) => {
+	unsafeFind = async (selector: string, index = 0) => {
 		const array = await this.findArray(selector)
 
 		if (array.length && array[index]) {
@@ -64,7 +81,9 @@ export default class DriverExtention {
 		}
 	}
 
-	waitElementLocated = async (selector, place, action) => {
+	navigate = () => this._driver.navigate()
+
+	waitElementLocated = async (selector: string, place: string, action: Function) => {
 		while (true) {
 			try {
 				const isElementLocated = await this.wait(until.elementLocated(By.css(selector)), 50000)

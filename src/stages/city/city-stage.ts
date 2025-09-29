@@ -1,17 +1,20 @@
 import { By } from 'selenium-webdriver'
-import selectors from '../../utils/selectors.js'
+import selectors from '../../utils/selectors'
+import { ICityStage } from './i-city-stage'
+import DriverExtention from '../../extentions/driver/driver-extention'
 
-export default class CityStage {
-	constructor(CardStageClass) {
+export default class CityStage implements ICityStage {
+	private _cardStageClass: any
+	constructor(CardStageClass: any) {
 		this._cardStageClass = CardStageClass
 	}
 
-	go = async (driver, citiesLength, cityNumber, regionName, regionNumber, i) => {
+	go = async (driver: DriverExtention, citiesLength: number, regionName: string, i: number, regionNumber: number | undefined, cityNumber: number | undefined) => {
 		let refreshed = false
 		let cityName
 		for (let j = 0; j < citiesLength; j++) {
 			try {
-				if (regionNumber === i && cityNumber > j) j = cityNumber
+				if (cityNumber && regionNumber === i && cityNumber > j) j = cityNumber
 
 				if (refreshed) {
 					await driver.waitElementLocated(selectors.currentCity, 'currentCity after refresh', async () => await driver.navigate().refresh())
@@ -68,7 +71,8 @@ export default class CityStage {
 					await driver.acceptCookes()
 
 					const deltaY = (await cardsContainer.getRect()).y
-					await driver.actions().scroll(0, 0, 0, Math.round(deltaY)).perform()
+					await driver.scroll(deltaY)
+
 					await driver.sleep(500)
 
 					// const {workbook, worksheet, dataDir, fileName} = xlsx
