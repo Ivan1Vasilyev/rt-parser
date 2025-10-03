@@ -1,54 +1,50 @@
 import fs from 'fs'
 import path from 'path'
-import { fileURLToPath } from 'url'
 import XLSX from 'xlsx'
-import { IXlsxExtention, tariffType, keys } from './i-xlsx-extention'
-import { SHEET_NAME } from '../../utils/template-config'
+import { IXlsxExtention, tariffDataType, keys } from './i-xlsx-extention'
 
 export default class XlsxExtention implements IXlsxExtention {
-	workbook: XLSX.WorkBook
-	worksheet: tariffType[]
-	fileName: string
-	dataDir: string
-	sheetName: string = 'Тарифы'
+	_SHEET_NAME: string = 'Тарифы'
+	_workbook: XLSX.WorkBook
+	_fileName: string
+	_dataDir: string
+	_worksheet: tariffDataType[]
 
 	constructor(fileName: string) {
-		this.workbook = XLSX.utils.book_new()
+		this._workbook = XLSX.utils.book_new()
 
-		XLSX.utils.book_append_sheet(this.workbook, [], SHEET_NAME)
-		this.workbook.Sheets[SHEET_NAME] = {}
+		XLSX.utils.book_append_sheet(this._workbook, [], this._SHEET_NAME)
+		this._workbook.Sheets[this._SHEET_NAME] = {}
+		this._worksheet = XLSX.utils.sheet_to_json<tariffDataType>(this._workbook.Sheets[this._SHEET_NAME])
+		this._dataDir = path.join(__dirname, '../../../data')
 
-		this.worksheet = XLSX.utils.sheet_to_json<tariffType>(this.workbook.Sheets[SHEET_NAME])
-
-		// const __dirname = path.dirname(fileURLToPath(import.meta.url))
-		this.dataDir = path.join(__dirname, '../../../data')
-
-		if (!fs.existsSync(this.dataDir)) {
-			fs.mkdirSync(this.dataDir)
+		if (!fs.existsSync(this._dataDir)) {
+			fs.mkdirSync(this._dataDir, { recursive: true })
 		}
 
-		this.fileName = this.setFileName(fileName)
+		this._fileName = this.setFileName(fileName)
 	}
 
 	writeFile(): void {
-		XLSX.utils.sheet_add_json(this.workbook.Sheets[SHEET_NAME], this.worksheet)
-		XLSX.writeFileXLSX(this.workbook, path.join(this.dataDir, this.fileName))
+		XLSX.utils.sheet_add_json(this._workbook.Sheets[this._SHEET_NAME], this._worksheet)
+		XLSX.writeFileXLSX(this._workbook, path.join(this._dataDir, this._fileName))
 	}
 
-	getTemplate = (): tariffType => keys.reduce((obj, value) => ({ ...obj, [value]: '' }), {} as tariffType)
+	getTemplate = (): tariffDataType => keys.reduce((obj, value) => ({ ...obj, [value]: '' }), {} as tariffDataType)
 
-	private setFileName(fileName: string): string {
-		let count = 1
+	push = (tariffData: tariffDataType): void => {
+		this._worksheet.push(tariffData)
+	}
+
+	private setFileName = (fileName: string): string => {
 		const date = new Date().toLocaleDateString()
-		while (fs.existsSync(path.join(this.dataDir, `${fileName} ${date}.xlsx`))) {
-			fileName = `${fileName} ${count++}`
+		const name = fileName
+		let count = 1
+		while (fs.existsSync(path.join(this._dataDir, `${fileName} ${date}.xlsx`))) {
+			fileName = `${count++} ${name}`
 		}
 
 		return `${fileName} ${date}.xlsx`
-	}
-
-	push(template: tariffType): void {
-		this.worksheet.push(template)
 	}
 
 	KEYS = {

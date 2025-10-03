@@ -1,30 +1,44 @@
 import DriverExtention from '../../extentions/driver/driver-extention'
+import XlsxExtention from '../../extentions/xlsx/xlsx-extention'
+import { ClusterNamesType } from '../../services/cluster/cluster-service'
+import Logger from '../../services/logger/log-service'
 import selectors from '../../utils/selectors'
-import { IRegionStage } from '../region/i-region-stage'
+import { ICardStageCtor } from '../card/i-card-stage'
+import { ICityStageCtor } from '../city/i-city-stage'
+import { IRegionStage, IRegionStageCtor } from '../region/i-region-stage'
 
 export type wayConfig = {
-	url: string
-	regionStage: IRegionStage
+	path: string
+	regionStageClass: IRegionStageCtor
+	cityStageClass: ICityStageCtor
+	cardsStageClass: ICardStageCtor
+	logger: Logger
+	fileName: string
+	clusterName: ClusterNamesType | undefined
 }
 
 export default class RootStage {
-	private _url: string
+	private _path: string
+	private _fileName: string
 	private _regionStage: IRegionStage
-	constructor(config: wayConfig) {
-		this._url = config.url
-		this._regionStage = config.regionStage
+	private _logger: Logger
+	constructor({ path, regionStageClass, cityStageClass, cardsStageClass, fileName, clusterName, logger }: wayConfig) {
+		this._path = path
+		this._fileName = fileName
+		this._logger = logger
+		this._regionStage = new regionStageClass(new cityStageClass(new cardsStageClass(new XlsxExtention(fileName)), logger), logger, clusterName)
 	}
 
 	go = async (regionNumber?: number | undefined, cityNumber?: number | undefined) => {
 		const driver = new DriverExtention()
 
 		try {
-			await driver.get(this._url)
+			await driver.get(`https://rt.ru/${this._path}`)
 			await driver.maximize()
 			await driver.sleep(2000)
 			await driver.acceptCookes()
-			await driver.openRegions()
-			await driver.waitElementLocated(selectors.regions, 'start', async () => await driver.openRegions())
+			await driver.openRegions(this._logger)
+			await driver.waitElementLocated(this._logger, selectors.regions, 'start', async () => await driver.openRegions(this._logger))
 
 			const regionsLength = (await driver.findArray(selectors.regions)).length
 
@@ -34,14 +48,14 @@ export default class RootStage {
 		} catch (err: any) {
 			const fixedRegionNumber = err.regionNumber ?? regionNumber ?? 0
 			const fixedCityNumber = err.cityNumber ?? cityNumber ?? 0
-			console.log('я упал...')
-			console.log(err.error || err)
-			console.log(`для продолжения - номер региона: ${fixedRegionNumber}, номер города: ${fixedCityNumber}`)
+			this._logger.log('я упал...')
+			this._logger.log(err.error || err)
+			this._logger.log(`для продолжения - номер региона: ${fixedRegionNumber}, номер города: ${fixedCityNumber}`)
 			if (err.error?.name === 'NoSuchWindowError') {
-				console.log('было закрыто окно браузера')
+				this._logger.log('было закрыто окно браузера')
 			} else {
 				if (err.error?.code === 'EBUSY') {
-					// console.log(`Был открыт файл ${FILE_NAME}dd.mm.yyyy.xlsx в момент внесения записи`)
+					this._logger.log(`В момент внесения записи файл ${this._fileName} был открыт`)
 				}
 				await driver.quit()
 				this.go(fixedRegionNumber, fixedCityNumber)

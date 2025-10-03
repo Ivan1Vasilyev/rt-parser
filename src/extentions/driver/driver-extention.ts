@@ -2,6 +2,7 @@ import { By, until, Builder, Browser, ThenableWebDriver, WebElement, Locator, We
 import chrome from 'selenium-webdriver/chrome.js'
 import selectors from '../../utils/selectors'
 import { IDriverExtention } from './i-driver-extention'
+import Logger from '../../services/logger/log-service'
 
 export default class DriverExtention implements IDriverExtention {
 	private _driver: ThenableWebDriver
@@ -45,12 +46,12 @@ export default class DriverExtention implements IDriverExtention {
 		return ''
 	}
 
-	goNextCity = async (region: WebElement, regionIndex?: number) => {
+	goNextCity = async (logger: Logger, region: WebElement, regionIndex?: number) => {
 		await region.click()
 		await this.sleep(3000)
-		await this.waitElementLocated(selectors.cities, 'cities', async () => {
-			await this.openRegions()
-			await this.waitElementLocated(selectors.regions, 'regions', async () => await this.openRegions())
+		await this.waitElementLocated(logger, selectors.cities, 'cities', async () => {
+			await this.openRegions(logger)
+			await this.waitElementLocated(logger, selectors.regions, 'regions', async () => await this.openRegions(logger))
 			const region = await this.unsafeFind(selectors.regions, regionIndex)
 			await region.click()
 		})
@@ -83,14 +84,14 @@ export default class DriverExtention implements IDriverExtention {
 
 	navigate = () => this._driver.navigate()
 
-	waitElementLocated = async (selector: string, place: string, action: Function) => {
+	waitElementLocated = async (logger: Logger, selector: string, place: string, action: Function) => {
 		while (true) {
 			try {
 				const isElementLocated = await this.wait(until.elementLocated(By.css(selector)), 50000)
 				if (isElementLocated) break
 			} catch (e) {
 				await this.navigate().refresh()
-				console.log(`refreshed in ${place}`)
+				logger.log(`refreshed in ${place}`)
 				await this.sleep(5000)
 				if (action) {
 					await action()
@@ -101,16 +102,16 @@ export default class DriverExtention implements IDriverExtention {
 		}
 	}
 
-	clickCurrentCity = async () => {
-		await this.waitElementLocated(selectors.currentCity, 'currentCity', async () => await this.navigate().refresh())
+	clickCurrentCity = async (logger: Logger) => {
+		await this.waitElementLocated(logger, selectors.currentCity, 'currentCity', async () => await this.navigate().refresh())
 		const currentCity = await this.unsafeFind(selectors.currentCity)
 		await currentCity.click()
 		await this.sleep(2000)
 	}
 
-	openRegions = async () => {
-		await this.clickCurrentCity()
-		await this.waitElementLocated(selectors.regionsButton, 'regionsButton', async () => await this.clickCurrentCity())
+	openRegions = async (logger: Logger) => {
+		await this.clickCurrentCity(logger)
+		await this.waitElementLocated(logger, selectors.regionsButton, 'regionsButton', async () => await this.clickCurrentCity(logger))
 		const regionsButton = await this.unsafeFind(selectors.regionsButton)
 		await regionsButton.click()
 		await this.sleep(2000)

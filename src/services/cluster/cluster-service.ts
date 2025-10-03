@@ -1,12 +1,12 @@
-type clustersType = {
-	Восток: string[]
-	Запад: string[]
-	Юг: string[]
-	'Северо-Запад, Центр, Москва': string[]
-}
+import { WEST_CLUSTER_NAME, NORTH_CLUSTER_NAME, EAST_CLUSTER_NAME, NORTH_WEST_CENTER_MOSCOW_CLUSTER_NAME } from './cluster-names'
+
+const clusterNames = [WEST_CLUSTER_NAME, NORTH_CLUSTER_NAME, EAST_CLUSTER_NAME, NORTH_WEST_CENTER_MOSCOW_CLUSTER_NAME] as const
+
+export type ClusterNamesType = (typeof clusterNames)[number]
+type clustersType = Record<ClusterNamesType, string[]>
 
 class ClusterService {
-	eastRegions = [
+	_eastRegions = [
 		'Амурская',
 		'Еврейская',
 		'Камчатский',
@@ -37,7 +37,7 @@ class ClusterService {
 		'Чукотский',
 	]
 
-	southRegions = [
+	_southRegions = [
 		'Нижегородская',
 		'Марий Эл',
 		'Кировская',
@@ -66,7 +66,7 @@ class ClusterService {
 		'Краснодарский край',
 	]
 
-	westRegions = ['Архангельская', 'Вологодская', 'Калининградская', 'Карелия', 'Мурманская', 'Новгородская', 'Псковская', 'Коми', 'Санкт-Петербург', 'Ленинградская']
+	_westRegions = ['Архангельская', 'Вологодская', 'Калининградская', 'Карелия', 'Мурманская', 'Новгородская', 'Псковская', 'Коми', 'Санкт-Петербург', 'Ленинградская']
 
 	northWestCenterMoscowRegions = [
 		'Москва город',
@@ -87,26 +87,30 @@ class ClusterService {
 		'Тверская',
 		'Тульская',
 		'Ярославская',
-		...this.westRegions,
+		...this._westRegions,
 	]
 
 	_clusters: clustersType = {
-		Восток: this.eastRegions,
-		Запад: this.westRegions,
-		Юг: this.southRegions,
+		Восток: this._eastRegions,
+		Запад: this._westRegions,
+		Юг: this._southRegions,
 		'Северо-Запад, Центр, Москва': this.northWestCenterMoscowRegions,
 	}
 
-	_clusterKeys = Object.keys(this._clusters) as (keyof clustersType)[]
+	getRegionsByCluster(clusterName: ClusterNamesType): string[] {
+		return this._clusters[clusterName]
+	}
 
-	getCluster(regionName: string): string {
-		for (let i = 0; i < this._clusterKeys.length; i++) {
-			if (this._clusters[this._clusterKeys[i]].some((r: string) => regionName.includes(r))) {
-				return this._clusterKeys[i]
+	_UNKNUWN_CLUSTER = 'вне известных кластеров'
+
+	getCluster(regionName: string): ClusterNamesType | typeof this._UNKNUWN_CLUSTER {
+		for (let i = 0; i < clusterNames.length; i++) {
+			if (this._clusters[clusterNames[i]].some((r: string) => regionName.includes(r))) {
+				return clusterNames[i]
 			}
 		}
 
-		return 'вне известных кластеров'
+		return this._UNKNUWN_CLUSTER
 	}
 }
 

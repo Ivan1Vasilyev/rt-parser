@@ -29,15 +29,12 @@ export const keys = [
 	'Кластер',
 ] as const
 
+export type keysType = { [key: string]: (typeof keys)[number] }
+export type tariffDataType = Record<(typeof keys)[number], string | undefined>
+
 export interface IXlsxExtention {
 	writeFile(): void
-	getTemplate(): tariffType
-	push(template: tariffType): void
+	getTemplate(): tariffDataType
+	push(template: tariffDataType): void
 	KEYS: keysType
 }
-
-export type keysType = { [key: string]: (typeof keys)[number] }
-
-export type tariffType = Record<(typeof keys)[number], string | undefined>
-
-// export type worksheetType = (keyof tariffType)[]

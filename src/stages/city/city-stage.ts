@@ -2,35 +2,43 @@ import { By } from 'selenium-webdriver'
 import selectors from '../../utils/selectors'
 import { ICityStage } from './i-city-stage'
 import DriverExtention from '../../extentions/driver/driver-extention'
+import { ICardStage } from '../card/i-card-stage'
+import Logger from '../../services/logger/log-service'
 
 export default class CityStage implements ICityStage {
-	private _cardStageClass: any
-	constructor(CardStageClass: any) {
+	protected _refreshed: boolean = false
+	protected _cityName: string = ''
+	protected _cardStageClass: ICardStage
+	protected _tariffsSelector: string = selectors.tariffs
+	protected _containerSelector: string = selectors.container
+	protected _stageName: string = ''
+	private _logger: Logger
+
+	constructor(CardStageClass: ICardStage, logger: Logger) {
 		this._cardStageClass = CardStageClass
+		this._logger = logger
 	}
 
 	go = async (driver: DriverExtention, citiesLength: number, regionName: string, i: number, regionNumber: number | undefined, cityNumber: number | undefined) => {
-		let refreshed = false
-		let cityName
 		for (let j = 0; j < citiesLength; j++) {
 			try {
 				if (cityNumber && regionNumber === i && cityNumber > j) j = cityNumber
 
-				if (refreshed) {
-					await driver.waitElementLocated(selectors.currentCity, 'currentCity after refresh', async () => await driver.navigate().refresh())
+				if (this._refreshed) {
+					await driver.waitElementLocated(this._logger, selectors.currentCity, 'currentCity after refresh', async () => await driver.navigate().refresh())
 
-					refreshed = false
+					this._refreshed = false
 				} else {
-					await driver.waitElementLocated(selectors.regions, 'regions', async () => await driver.openRegions())
-					await driver.waitElementLocated(selectors.cities, 'cities', async () => {
-						await driver.openRegions()
-						await driver.waitElementLocated(selectors.regions, 'regions after cities', async () => await driver.openRegions())
+					await driver.waitElementLocated(this._logger, selectors.regions, 'regions', async () => await driver.openRegions(this._logger))
+					await driver.waitElementLocated(this._logger, selectors.cities, 'cities', async () => {
+						await driver.openRegions(this._logger)
+						await driver.waitElementLocated(this._logger, selectors.regions, 'regions after cities', async () => await driver.openRegions(this._logger))
 						const region = await driver.unsafeFind(selectors.regions, i)
 						await region.click()
 					})
 
 					const city = await driver.unsafeFind(selectors.cities, j)
-					cityName = await city.getText()
+					this._cityName = await city.getText()
 
 					await city.click()
 				}
@@ -43,7 +51,7 @@ export default class CityStage implements ICityStage {
 
 				while (true) {
 					noData = await driver.findArray(selectors.noData)
-					tariffs = await driver.findArray(selectors.tariffs)
+					tariffs = await driver.findArray(this._tariffsSelector)
 
 					if (!tariffs.length && !noData.length) {
 						await driver.sleep(1000)
@@ -53,9 +61,9 @@ export default class CityStage implements ICityStage {
 					if (tariffs.length || noData.length) break
 
 					if (counter > 8) {
-						await driver.navigate().refresh()
-						console.log(`refreshed in loading tariffs. City: ${cityName}`)
-						refreshed = true
+						await driver.refresh()
+						console.log(`refreshed in loading ${this._stageName}tariffs. City: ${this._cityName}`)
+						this._refreshed = true
 						counter = 0
 						j--
 						await driver.sleep(1000)
@@ -63,33 +71,27 @@ export default class CityStage implements ICityStage {
 					}
 				}
 
-				if (refreshed) continue
+				if (this._refreshed) continue
 
-				if (!noData.length) {
-					const cardsContainer = await driver.findElement(By.css(selectors.container))
-
+				if (noData.length) {
+					this._logger.log(`в ${this._cityName} нет тарифов. ${j + 1} из ${citiesLength}`)
+				} else {
+					const cardsContainer = await driver.findElement(By.css(this._containerSelector))
 					await driver.acceptCookes()
 
 					const deltaY = (await cardsContainer.getRect()).y
 					await driver.scroll(deltaY)
-
 					await driver.sleep(500)
 
-					// const {workbook, worksheet, dataDir, fileName} = xlsx
-					// await cardsLoop(driver, worksheet, tariffs, cardsContainer, cityName, regionName)
+					await this._cardStageClass.go(driver, cardsContainer, this._cityName, regionName)
 
-					// XLSX.utils.sheet_add_json(workbook.Sheets[SHEET_NAME], worksheet)
-					// XLSX.writeFileXLSX(workbook, path.join(dataDir, fileName))
-
-					console.log(`сбор данных в ${cityName} завершён`, `${j + 1} из ${citiesLength}`)
-				} else {
-					console.log(`в ${cityName} нет тарифов`, `${j + 1} из ${citiesLength}`)
+					this._logger.log(`сбор данных в ${this._cityName} завершён. ${j + 1} из ${citiesLength}`)
 				}
 
-				await driver.openRegions()
+				await driver.openRegions(this._logger)
 
 				if (j < citiesLength - 1) {
-					await driver.waitElementLocated(selectors.regions, `cities end. City - ${cityName}`, async () => await driver.openRegions())
+					await driver.waitElementLocated(this._logger, selectors.regions, `cities end. City - ${this._cityName}`, async () => await driver.openRegions(this._logger))
 					const currentRegion = (await driver.findArray(selectors.regions))[i]
 					await currentRegion.click()
 					await driver.sleep(1000)

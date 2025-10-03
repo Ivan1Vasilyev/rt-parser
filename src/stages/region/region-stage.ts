@@ -1,12 +1,21 @@
-import { IRegionStage } from './i-region-stage'
 import selectors from '../../utils/selectors'
 import { ICityStage } from '../city/i-city-stage'
 import DriverExtention from '../../extentions/driver/driver-extention'
+import clustersService, { ClusterNamesType } from '../../services/cluster/cluster-service'
+import { IRegionStage } from './i-region-stage'
+import Logger from '../../services/logger/log-service'
 
 export default class RegionStage implements IRegionStage {
 	private _cityStage: ICityStage
-	constructor(cityStage: ICityStage) {
+	private _clusters?: string[]
+	private _logger: Logger
+
+	constructor(cityStage: ICityStage, logger: Logger, clusterName?: ClusterNamesType) {
 		this._cityStage = cityStage
+		this._logger = logger
+		if (clusterName) {
+			this._clusters = clustersService.getRegionsByCluster(clusterName)
+		}
 	}
 
 	go = async (driver: DriverExtention, regionsLength: number, regionNumber: number | undefined, cityNumber: number | undefined) => {
@@ -14,30 +23,30 @@ export default class RegionStage implements IRegionStage {
 			if (regionNumber && regionNumber > i) i = regionNumber
 
 			try {
-				await driver.waitElementLocated(selectors.regions, 'regions', async () => await driver.openRegions())
+				await driver.waitElementLocated(this._logger, selectors.regions, 'regions', async () => await driver.openRegions(this._logger))
 
 				const region = await driver.unsafeFind(selectors.regions, i)
 				const regionName = await region.getText()
 
-				// if (!northEastCenterMoscowRegions.some((r) => regionName.includes(r))) continue
+				if (this._clusters && !this._clusters.some((r: string) => regionName.includes(r))) continue
 				console.log('регион: ' + regionName)
 
 				await region.click()
 				await driver.sleep(3000)
-				await driver.waitElementLocated(selectors.cities, 'cities', async () => {
-					await driver.openRegions()
-					await driver.waitElementLocated(selectors.regions, 'regions', async () => await driver.openRegions())
+				await driver.waitElementLocated(this._logger, selectors.cities, 'cities', async () => {
+					await driver.openRegions(this._logger)
+					await driver.waitElementLocated(this._logger, selectors.regions, 'regions', async () => await driver.openRegions(this._logger))
 					const region = await driver.unsafeFind(selectors.regions, i)
 					await region.click()
 				})
 				const citiesLength = (await driver.findArray(selectors.cities)).length
 				if (citiesLength == 0) {
-					console.log(`В регионе ${regionName} не загрузились города`)
-					console.log(`Индекс региона: ${i}`)
+					this._logger.log(`В регионе ${regionName} не загрузились города`)
+					this._logger.log(`Индекс региона: ${i}`)
 
 					await driver.navigate().refresh()
 					await driver.sleep(3000)
-					await driver.openRegions()
+					await driver.openRegions(this._logger)
 
 					i--
 					continue
