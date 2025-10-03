@@ -2,17 +2,18 @@ import fs from 'fs'
 import path from 'path'
 
 export default class Logger {
-	logFileName: string
-	logsDir: string
-	logFilePath: any
+	private _logFileName: string
+	private _logsDir: string
+	private _logFilePath: any
+	private _logs: string = ''
 
 	constructor(logFileName: string = 'app') {
-		this.logFileName = `${logFileName}.log`
-		this.logsDir = './logs'
-		this.logFilePath = path.join(this.logsDir, this.logFileName)
+		this._logFileName = `${logFileName}.log`
+		this._logsDir = './logs'
+		this._logFilePath = path.join(this._logsDir, this._logFileName)
 
-		if (!fs.existsSync(this.logsDir)) {
-			fs.mkdirSync(this.logsDir, { recursive: true })
+		if (!fs.existsSync(this._logsDir)) {
+			fs.mkdirSync(this._logsDir, { recursive: true })
 		}
 
 		this.clearLog()
@@ -20,8 +21,9 @@ export default class Logger {
 
 	clearLog() {
 		try {
-			fs.writeFileSync(this.logFilePath, '')
-			console.log(`Лог-файл ${this.logFileName} очищен`)
+			this._logs = ''
+			fs.writeFileSync(this._logFilePath, '')
+			console.log(`Лог-файл ${this._logFileName} очищен`)
 		} catch (err) {
 			console.error('Ошибка очистки лог-файла:', err)
 		}
@@ -30,11 +32,8 @@ export default class Logger {
 	log(message: string) {
 		const timestamp = new Date().toLocaleTimeString()
 		const logMessage = `[${timestamp}] ${message}\n`
+		this._logs = logMessage + this._logs
 
-		fs.appendFile(this.logFilePath, logMessage, err => {
-			if (err) {
-				console.error('Ошибка записи в лог:', err)
-			}
-		})
+		fs.writeFileSync(this._logFilePath, this._logs)
 	}
 }

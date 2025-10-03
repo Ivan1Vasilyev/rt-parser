@@ -11,7 +11,7 @@ import Logger from './services/logger/log-service'
 
 let clusterName: ClusterNamesType | undefined
 
-clusterName = NORTH_WEST_CENTER_MOSCOW_CLUSTER_NAME
+// clusterName = NORTH_WEST_CENTER_MOSCOW_CLUSTER_NAME
 
 const mainWayConfig: wayConfig = {
 	path: 'packages/tariffs',

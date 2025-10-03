@@ -62,7 +62,7 @@ export default class CityStage implements ICityStage {
 
 					if (counter > 8) {
 						await driver.refresh()
-						console.log(`refreshed in loading ${this._stageName}tariffs. City: ${this._cityName}`)
+						this._logger.log(`refreshed in loading ${this._stageName}tariffs. City: ${this._cityName}`)
 						this._refreshed = true
 						counter = 0
 						j--

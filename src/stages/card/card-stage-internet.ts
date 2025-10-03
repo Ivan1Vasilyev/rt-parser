@@ -3,7 +3,6 @@ import DriverExtention from '../../extentions/driver/driver-extention'
 import { IXlsxExtention } from '../../extentions/xlsx/i-xlsx-extention'
 import CardStage from './card-stage'
 import clustersService from '../../services/cluster/cluster-service'
-import RootStage from '../../../dist/stages/root/root-stage'
 
 export default class CardStageInternet extends CardStage {
 	protected _oldPriceSelector: string = '.rt-price-v3__old-val'
@@ -42,7 +41,7 @@ export default class CardStageInternet extends CardStage {
 			const actionHeadText = await actionHead[0].getText()
 			addText(` ${actionHeadText}: `)
 
-			const actionText = await (await driver.findArray('.landing-offer > .d-flex .font-t-xs.color-main05', container))[0].getText()
+			const actionText = await driver.getText(container, '.landing-offer > .d-flex .font-t-xs.color-main05')
 			addText(actionText)
 		}
 
@@ -51,7 +50,7 @@ export default class CardStageInternet extends CardStage {
 			const videoHead = await (await driver.findArray('.font-t-s', videoInfo[0]))[0].getText()
 			addText(` ${videoHead}: `)
 
-			const videoText = await (await driver.findArray('.font-t-xs.color-main05:not(.sp-b-darkpurple)', videoInfo[0]))[0].getText()
+			const videoText = await driver.getText(videoInfo[0], '.font-t-xs.color-main05:not(.sp-b-darkpurple)')
 			addText(videoText)
 		}
 
@@ -99,7 +98,7 @@ export default class CardStageInternet extends CardStage {
 				const [discountDuration, priceInfo, discountMark] = await this._parsePriceAndDiscountInfo(driver, buttons[l])
 				const [speed, tariffInfoAdd] = await this._parseOffers(driver, cardsContainer)
 
-				const tariffName = await this._getTariffName(driver, buttons[l])
+				const tariffName = await this._getTariffName(driver, cardsContainer)
 
 				currentTariffData[this._xlsx.KEYS.cityName] = cityName
 				currentTariffData[this._xlsx.KEYS.tariffName] = tariffName

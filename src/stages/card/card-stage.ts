@@ -135,7 +135,9 @@ export default class CardStage implements ICardStage {
 		return [speed || '', interactiveTV || '', GB || '', minutes || '', SMS || '']
 	}
 
-	protected _getTariffName = async (driver: DriverExtention, card: WebElement): Promise<string> => await driver.getText(card, this._tariffNameSelector)
+	protected _getTariffName = async (driver: DriverExtention, webElement: WebElement): Promise<string> => {
+		return await driver.getText(webElement, this._tariffNameSelector)
+	}
 
 	go = async (driver: DriverExtention, cardsContainer: WebElement, cityName: string, regionName: string) => {
 		const tariffs = await driver.findArray(selectors.tariffs)

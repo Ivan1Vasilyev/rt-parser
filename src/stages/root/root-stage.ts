@@ -1,5 +1,5 @@
 import DriverExtention from '../../extentions/driver/driver-extention'
-import XlsxExtention from '../../extentions/xlsx/xlsx-extention'
+import XlsxExtention, { xslxService } from '../../extentions/xlsx/xlsx-extention'
 import { ClusterNamesType } from '../../services/cluster/cluster-service'
 import Logger from '../../services/logger/log-service'
 import selectors from '../../utils/selectors'
@@ -26,7 +26,7 @@ export default class RootStage {
 		this._path = path
 		this._fileName = fileName
 		this._logger = logger
-		this._regionStage = new regionStageClass(new cityStageClass(new cardsStageClass(new XlsxExtention(fileName)), logger), logger, clusterName)
+		this._regionStage = new regionStageClass(new cityStageClass(new cardsStageClass(xslxService), logger), logger, clusterName)
 	}
 
 	go = async (regionNumber?: number | undefined, cityNumber?: number | undefined) => {
@@ -50,6 +50,7 @@ export default class RootStage {
 			const fixedCityNumber = err.cityNumber ?? cityNumber ?? 0
 			this._logger.log('я упал...')
 			this._logger.log(err.error || err)
+			console.log(err.error || err)
 			this._logger.log(`для продолжения - номер региона: ${fixedRegionNumber}, номер города: ${fixedCityNumber}`)
 			if (err.error?.name === 'NoSuchWindowError') {
 				this._logger.log('было закрыто окно браузера')

@@ -29,7 +29,7 @@ export default class RegionStage implements IRegionStage {
 				const regionName = await region.getText()
 
 				if (this._clusters && !this._clusters.some((r: string) => regionName.includes(r))) continue
-				console.log('регион: ' + regionName)
+				this._logger.log('регион: ' + regionName)
 
 				await region.click()
 				await driver.sleep(3000)
@@ -54,7 +54,7 @@ export default class RegionStage implements IRegionStage {
 
 				await this._cityStage.go(driver, citiesLength, regionName, i, regionNumber, cityNumber)
 
-				console.log(`сбор данных по региону ${regionName} завершён`, `${i + 1} из ${regionsLength}`)
+				this._logger.log(`сбор данных по региону ${regionName} завершён. ${i + 1} из ${regionsLength}`)
 			} catch (err: any) {
 				throw { error: err.error || err, regionNumber: i, cityNumber: err.cityNumber || cityNumber }
 			}

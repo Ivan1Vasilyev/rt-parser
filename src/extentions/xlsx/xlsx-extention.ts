@@ -78,3 +78,5 @@ export default class XlsxExtention implements IXlsxExtention {
 		cluster: 'Кластер',
 	} as const
 }
+
+export const xslxService = new XlsxExtention('РТ все тарифы')
