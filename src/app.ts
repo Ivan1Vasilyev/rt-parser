@@ -40,10 +40,6 @@ const ranchoWayConfig: wayConfig = {
 	clusterName,
 }
 
-const mainWay = new RootStage(mainWayConfig)
-const internetWay = new RootStage(internetWayConfig)
-const ranchoWay = new RootStage(ranchoWayConfig)
-
-mainWay.go()
-internetWay.go()
-ranchoWay.go()
+new RootStage(mainWayConfig).go()
+new RootStage(internetWayConfig).go()
+new RootStage(ranchoWayConfig).go()

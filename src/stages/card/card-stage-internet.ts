@@ -1,17 +1,13 @@
 import { WebElement } from 'selenium-webdriver'
 import DriverExtention from '../../extentions/driver/driver-extention'
-import { IXlsxExtention } from '../../extentions/xlsx/i-xlsx-extention'
 import CardStage from './card-stage'
 import clustersService from '../../services/cluster/cluster-service'
+import xslxService from '../../extentions/xlsx/xlsx-extention'
 
 export default class CardStageInternet extends CardStage {
 	protected _oldPriceSelector: string = '.rt-price-v3__old-val'
 	protected _priceSelector: string = '.rt-price-v3__val'
 	protected _tariffNameSelector: string = '.landing-offer__name'
-
-	constructor(xlsx: IXlsxExtention) {
-		super(xlsx)
-	}
 
 	protected override _parsePriceAndDiscountInfo = async (driver: DriverExtention, button: WebElement): Promise<string[]> => {
 		const priceInfoElem = await driver.findArray('.landing-form-card__desc', button)
@@ -84,7 +80,7 @@ export default class CardStageInternet extends CardStage {
 
 	go = async (driver: DriverExtention, cardsContainer: WebElement, cityName: string, regionName: string) => {
 		const buttons = await driver.findArray('.landing-form-card', cardsContainer)
-		const currentTariffData = this._xlsx.getTemplate()
+		const currentTariffData = xslxService.getTemplate()
 		const cluster = clustersService.getCluster(regionName)
 		if (buttons.length) {
 			for (let l = 0; l < buttons.length; l++) {
@@ -100,20 +96,20 @@ export default class CardStageInternet extends CardStage {
 
 				const tariffName = await this._getTariffName(driver, cardsContainer)
 
-				currentTariffData[this._xlsx.KEYS.cityName] = cityName
-				currentTariffData[this._xlsx.KEYS.tariffName] = tariffName
-				currentTariffData[this._xlsx.KEYS.priceWithDiscount] = priceWithDiscount
-				currentTariffData[this._xlsx.KEYS.price] = price
-				currentTariffData[this._xlsx.KEYS.discountDuration] = discountDuration
-				currentTariffData[this._xlsx.KEYS.priceInfo] = priceInfo
-				currentTariffData[this._xlsx.KEYS.discountMark] = discountMark
-				currentTariffData[this._xlsx.KEYS.discountMark] = priceInfo ? '1' : ''
-				currentTariffData[this._xlsx.KEYS.tariffInfo] = tariffInfo + tariffInfoAdd
-				currentTariffData[this._xlsx.KEYS.speed] = speed
-				currentTariffData[this._xlsx.KEYS.region] = regionName
-				currentTariffData[this._xlsx.KEYS.cluster] = cluster
+				currentTariffData[xslxService.KEYS.cityName] = cityName
+				currentTariffData[xslxService.KEYS.tariffName] = tariffName
+				currentTariffData[xslxService.KEYS.priceWithDiscount] = priceWithDiscount
+				currentTariffData[xslxService.KEYS.price] = price
+				currentTariffData[xslxService.KEYS.discountDuration] = discountDuration
+				currentTariffData[xslxService.KEYS.priceInfo] = priceInfo
+				currentTariffData[xslxService.KEYS.discountMark] = discountMark
+				currentTariffData[xslxService.KEYS.discountMark] = priceInfo ? '1' : ''
+				currentTariffData[xslxService.KEYS.tariffInfo] = tariffInfo + tariffInfoAdd
+				currentTariffData[xslxService.KEYS.speed] = speed
+				currentTariffData[xslxService.KEYS.region] = regionName
+				currentTariffData[xslxService.KEYS.cluster] = cluster
 
-				this._xlsx.push(currentTariffData)
+				xslxService.push(currentTariffData)
 			}
 		} else {
 			const [priceWithDiscount, price] = await this._parsePrices(driver, cardsContainer)
@@ -122,18 +118,17 @@ export default class CardStageInternet extends CardStage {
 			const [speed, tariffInfoAdd] = await this._parseOffers(driver, cardsContainer)
 			const tariffName = await this._getTariffName(driver, cardsContainer)
 
-			currentTariffData[this._xlsx.KEYS.cityName] = cityName
-			currentTariffData[this._xlsx.KEYS.tariffName] = tariffName
-			currentTariffData[this._xlsx.KEYS.priceWithDiscount] = priceWithDiscount
-			currentTariffData[this._xlsx.KEYS.price] = price
-			currentTariffData[this._xlsx.KEYS.tariffInfo] = tariffInfo + tariffInfoAdd
-			currentTariffData[this._xlsx.KEYS.speed] = speed
-			currentTariffData[this._xlsx.KEYS.region] = regionName
-			currentTariffData[this._xlsx.KEYS.cluster] = cluster
-
-			this._xlsx.push(currentTariffData)
+			currentTariffData[xslxService.KEYS.cityName] = cityName
+			currentTariffData[xslxService.KEYS.tariffName] = tariffName
+			currentTariffData[xslxService.KEYS.priceWithDiscount] = priceWithDiscount
+			currentTariffData[xslxService.KEYS.price] = price
+			currentTariffData[xslxService.KEYS.tariffInfo] = tariffInfo + tariffInfoAdd
+			currentTariffData[xslxService.KEYS.speed] = speed
+			currentTariffData[xslxService.KEYS.region] = regionName
+			currentTariffData[xslxService.KEYS.cluster] = cluster
+			xslxService.push(currentTariffData)
 		}
 
-		this._xlsx.writeFile()
+		xslxService.writeFile()
 	}
 }

@@ -2,7 +2,7 @@ import { By, until, Builder, Browser, ThenableWebDriver, WebElement, Locator, We
 import chrome from 'selenium-webdriver/chrome.js'
 import selectors from '../../utils/selectors'
 import { IDriverExtention } from './i-driver-extention'
-import Logger from '../../services/logger/log-service'
+import Logger, { logStateEnum } from '../../services/logger/log-service'
 
 export default class DriverExtention implements IDriverExtention {
 	private _driver: ThenableWebDriver
@@ -91,7 +91,7 @@ export default class DriverExtention implements IDriverExtention {
 				if (isElementLocated) break
 			} catch (e) {
 				await this.navigate().refresh()
-				logger.log(`refreshed in ${place}`)
+				logger.log(`refreshed in ${place}`, logStateEnum.warning)
 				await this.sleep(5000)
 				if (action) {
 					await action()

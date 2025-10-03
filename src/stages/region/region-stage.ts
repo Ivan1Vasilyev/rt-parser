@@ -3,7 +3,7 @@ import { ICityStage } from '../city/i-city-stage'
 import DriverExtention from '../../extentions/driver/driver-extention'
 import clustersService, { ClusterNamesType } from '../../services/cluster/cluster-service'
 import { IRegionStage } from './i-region-stage'
-import Logger from '../../services/logger/log-service'
+import Logger, { logStateEnum } from '../../services/logger/log-service'
 
 export default class RegionStage implements IRegionStage {
 	private _cityStage: ICityStage
@@ -41,8 +41,8 @@ export default class RegionStage implements IRegionStage {
 				})
 				const citiesLength = (await driver.findArray(selectors.cities)).length
 				if (citiesLength == 0) {
-					this._logger.log(`В регионе ${regionName} не загрузились города`)
-					this._logger.log(`Индекс региона: ${i}`)
+					this._logger.log(`В регионе ${regionName} не загрузились города`, logStateEnum.warning)
+					this._logger.log(`Индекс региона: ${i}`, logStateEnum.warning)
 
 					await driver.navigate().refresh()
 					await driver.sleep(3000)

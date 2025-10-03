@@ -1,7 +1,6 @@
 import DriverExtention from '../../extentions/driver/driver-extention'
-import XlsxExtention, { xslxService } from '../../extentions/xlsx/xlsx-extention'
 import { ClusterNamesType } from '../../services/cluster/cluster-service'
-import Logger from '../../services/logger/log-service'
+import Logger, { logStateEnum } from '../../services/logger/log-service'
 import selectors from '../../utils/selectors'
 import { ICardStageCtor } from '../card/i-card-stage'
 import { ICityStageCtor } from '../city/i-city-stage'
@@ -24,7 +23,9 @@ export default class RootStage {
 	constructor({ path, regionStageClass, cityStageClass, cardsStageClass, clusterName, logger }: wayConfig) {
 		this._path = path
 		this._logger = logger
-		this._regionStage = new regionStageClass(new cityStageClass(new cardsStageClass(xslxService), logger), logger, clusterName)
+		const cardStage = new cardsStageClass()
+		const cityStage = new cityStageClass(cardStage, logger)
+		this._regionStage = new regionStageClass(cityStage, logger, clusterName)
 	}
 
 	go = async (regionNumber?: number | undefined, cityNumber?: number | undefined) => {
@@ -46,15 +47,15 @@ export default class RootStage {
 		} catch (err: any) {
 			const fixedRegionNumber = err.regionNumber ?? regionNumber ?? 0
 			const fixedCityNumber = err.cityNumber ?? cityNumber ?? 0
-			this._logger.log('я упал...')
-			this._logger.log(err.error || err)
+			this._logger.log('я упал...', logStateEnum.error)
+			this._logger.log(err.error || err, logStateEnum.error)
 			console.log(err.error || err)
-			this._logger.log(`для продолжения - номер региона: ${fixedRegionNumber}, номер города: ${fixedCityNumber}`)
+			this._logger.log(`для продолжения - номер региона: ${fixedRegionNumber}, номер города: ${fixedCityNumber}`, logStateEnum.warning)
 			if (err.error?.name === 'NoSuchWindowError') {
-				this._logger.log('было закрыто окно браузера')
+				this._logger.log('было закрыто окно браузера', logStateEnum.warning)
 			} else {
 				if (err.error?.code === 'EBUSY') {
-					this._logger.log(`В момент внесения записи файл .xslx был открыт`)
+					this._logger.log(`В момент внесения записи файл .xslx был открыт`, logStateEnum.warning)
 				}
 				await driver.quit()
 				this.go(fixedRegionNumber, fixedCityNumber)

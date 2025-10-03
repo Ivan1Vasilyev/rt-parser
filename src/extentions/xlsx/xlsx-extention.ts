@@ -3,7 +3,7 @@ import path from 'path'
 import XLSX from 'xlsx'
 import { IXlsxExtention, tariffDataType, keys } from './i-xlsx-extention'
 
-export default class XlsxExtention implements IXlsxExtention {
+class XlsxExtention implements IXlsxExtention {
 	_SHEET_NAME: string = 'Тарифы'
 	_workbook: XLSX.WorkBook
 	_fileName: string
@@ -79,4 +79,5 @@ export default class XlsxExtention implements IXlsxExtention {
 	} as const
 }
 
-export const xslxService = new XlsxExtention('РТ тарифы')
+const xslxService = new XlsxExtention('РТ тарифы')
+export default xslxService

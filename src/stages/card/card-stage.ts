@@ -3,17 +3,14 @@ import DriverExtention from '../../extentions/driver/driver-extention'
 import { ICardStage } from './i-card-stage'
 import selectors from '../../utils/selectors'
 import clustersService from '../../services/cluster/cluster-service'
-import { IXlsxExtention } from '../../extentions/xlsx/i-xlsx-extention'
+import xslxService from '../../extentions/xlsx/xlsx-extention'
 
 export default class CardStage implements ICardStage {
 	protected _oldPriceSelector: string = selectors.oldPriceValue
 	protected _priceSelector: string = selectors.priceValue
 	protected _tariffNameSelector: string = selectors.tariffName
 
-	protected _xlsx: IXlsxExtention
-	constructor(xlsx: IXlsxExtention) {
-		this._xlsx = xlsx
-	}
+	constructor() {}
 
 	protected _getDigits = (str: string): string => {
 		const digits = str.match(/\d+/g)
@@ -143,7 +140,7 @@ export default class CardStage implements ICardStage {
 		const tariffs = await driver.findArray(selectors.tariffs)
 
 		for (let l = 0; l < tariffs.length; l++) {
-			const currentTariffData = this._xlsx.getTemplate()
+			const currentTariffData = xslxService.getTemplate()
 			const [priceWithDiscount, price] = await this._parsePrices(driver, tariffs[l])
 			const [tariffInfo, routerForRent, TVBoxForRent, TVBoxToBuy] = await this._parseTariffInfo(driver, tariffs[l])
 			const [discountDuration, priceInfo, discountMark] = await this._parsePriceAndDiscountInfo(driver, tariffs[l], tariffInfo)
@@ -152,26 +149,26 @@ export default class CardStage implements ICardStage {
 
 			if (!tariffName.trim()) throw 'нет навания тарифа'
 
-			currentTariffData[this._xlsx.KEYS.cityName] = cityName
-			currentTariffData[this._xlsx.KEYS.tariffName] = tariffName
-			currentTariffData[this._xlsx.KEYS.priceWithDiscount] = priceWithDiscount
-			currentTariffData[this._xlsx.KEYS.price] = price
-			currentTariffData[this._xlsx.KEYS.discountDuration] = discountDuration
-			currentTariffData[this._xlsx.KEYS.priceInfo] = priceInfo
-			currentTariffData[this._xlsx.KEYS.discountMark] = discountMark
-			currentTariffData[this._xlsx.KEYS.tariffInfo] = tariffInfo
-			currentTariffData[this._xlsx.KEYS.routerForRent] = routerForRent
-			currentTariffData[this._xlsx.KEYS.TVBoxForRent] = TVBoxForRent
-			currentTariffData[this._xlsx.KEYS.TVBoxToBuy] = TVBoxToBuy
-			currentTariffData[this._xlsx.KEYS.speed] = speed
-			currentTariffData[this._xlsx.KEYS.interactiveTV] = interactiveTV
-			currentTariffData[this._xlsx.KEYS.GB] = GB
-			currentTariffData[this._xlsx.KEYS.minutes] = minutes
-			currentTariffData[this._xlsx.KEYS.SMS] = SMS
-			currentTariffData[this._xlsx.KEYS.region] = regionName
-			currentTariffData[this._xlsx.KEYS.cluster] = clustersService.getCluster(regionName)
+			currentTariffData[xslxService.KEYS.cityName] = cityName
+			currentTariffData[xslxService.KEYS.tariffName] = tariffName
+			currentTariffData[xslxService.KEYS.priceWithDiscount] = priceWithDiscount
+			currentTariffData[xslxService.KEYS.price] = price
+			currentTariffData[xslxService.KEYS.discountDuration] = discountDuration
+			currentTariffData[xslxService.KEYS.priceInfo] = priceInfo
+			currentTariffData[xslxService.KEYS.discountMark] = discountMark
+			currentTariffData[xslxService.KEYS.tariffInfo] = tariffInfo
+			currentTariffData[xslxService.KEYS.routerForRent] = routerForRent
+			currentTariffData[xslxService.KEYS.TVBoxForRent] = TVBoxForRent
+			currentTariffData[xslxService.KEYS.TVBoxToBuy] = TVBoxToBuy
+			currentTariffData[xslxService.KEYS.speed] = speed
+			currentTariffData[xslxService.KEYS.interactiveTV] = interactiveTV
+			currentTariffData[xslxService.KEYS.GB] = GB
+			currentTariffData[xslxService.KEYS.minutes] = minutes
+			currentTariffData[xslxService.KEYS.SMS] = SMS
+			currentTariffData[xslxService.KEYS.region] = regionName
+			currentTariffData[xslxService.KEYS.cluster] = clustersService.getCluster(regionName)
 
-			this._xlsx.push(currentTariffData)
+			xslxService.push(currentTariffData)
 
 			const tariffsArrow = (await driver.findArray(selectors.tariffsArrow, cardsContainer))[0]
 			if (tariffsArrow && ((l > 1 && l <= tariffs.length - 4) || (tariffs.length < 14 && l > 0))) {
@@ -180,6 +177,6 @@ export default class CardStage implements ICardStage {
 			}
 		}
 
-		this._xlsx.writeFile()
+		xslxService.writeFile()
 	}
 }

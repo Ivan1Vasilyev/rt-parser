@@ -3,7 +3,7 @@ import selectors from '../../utils/selectors'
 import { ICityStage } from './i-city-stage'
 import DriverExtention from '../../extentions/driver/driver-extention'
 import { ICardStage } from '../card/i-card-stage'
-import Logger from '../../services/logger/log-service'
+import Logger, { logStateEnum } from '../../services/logger/log-service'
 
 export default class CityStage implements ICityStage {
 	protected _refreshed: boolean = false
@@ -11,7 +11,6 @@ export default class CityStage implements ICityStage {
 	protected _cardStageClass: ICardStage
 	protected _tariffsSelector: string = selectors.tariffs
 	protected _containerSelector: string = selectors.container
-	protected _stageName: string = ''
 	private _logger: Logger
 
 	constructor(CardStageClass: ICardStage, logger: Logger) {
@@ -62,7 +61,7 @@ export default class CityStage implements ICityStage {
 
 					if (counter > 8) {
 						await driver.refresh()
-						this._logger.log(`refreshed in loading ${this._stageName}tariffs. City: ${this._cityName}`)
+						this._logger.log(`refreshed in loading tariffs. City: ${this._cityName}`, logStateEnum.warning)
 						this._refreshed = true
 						counter = 0
 						j--
@@ -74,7 +73,7 @@ export default class CityStage implements ICityStage {
 				if (this._refreshed) continue
 
 				if (noData.length) {
-					this._logger.log(`в ${this._cityName} нет тарифов. ${j + 1} из ${citiesLength}`)
+					this._logger.log(`в ${this._cityName} нет тарифов. ${j + 1} из ${citiesLength}`, logStateEnum.warning)
 				} else {
 					const cardsContainer = await driver.findElement(By.css(this._containerSelector))
 					await driver.acceptCookes()

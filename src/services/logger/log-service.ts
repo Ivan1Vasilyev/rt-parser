@@ -6,6 +6,11 @@ export default class Logger {
 	private _logsDir: string
 	private _logFilePath: any
 	private _logs: string = ''
+	private _states: logState = {
+		[logStateEnum.error]: 'ERROR! ',
+		[logStateEnum.warning]: 'WARNING! ',
+		[logStateEnum.default]: '',
+	}
 
 	constructor(logFileName: string = 'app') {
 		this._logFileName = `${logFileName}.log`
@@ -29,13 +34,27 @@ export default class Logger {
 		}
 	}
 
-	log(message: string) {
+	log(message: string, state: logStateEnum = logStateEnum.default) {
 		const timestamp = new Date().toLocaleTimeString()
-		const logMessage = `[${timestamp}] ${message}\n`
+		// const logMessage = `[${timestamp}] ${message}\n`
+
+		const logMessage = `[${timestamp}] ${this._states[state]}${message}\n`
 
 		// пишем файл вверх, потому что IDE не хочет сама скролить файл вниз
 		this._logs = logMessage + this._logs
 
 		fs.writeFileSync(this._logFilePath, this._logs)
 	}
+}
+
+export enum logStateEnum {
+	error,
+	warning,
+	default,
+}
+
+type logState = {
+	[logStateEnum.error]: string
+	[logStateEnum.warning]: string
+	[logStateEnum.default]: string
 }
