@@ -13,18 +13,16 @@ export type wayConfig = {
 	cityStageClass: ICityStageCtor
 	cardsStageClass: ICardStageCtor
 	logger: Logger
-	fileName: string
 	clusterName: ClusterNamesType | undefined
 }
 
 export default class RootStage {
 	private _path: string
-	private _fileName: string
 	private _regionStage: IRegionStage
 	private _logger: Logger
-	constructor({ path, regionStageClass, cityStageClass, cardsStageClass, fileName, clusterName, logger }: wayConfig) {
+
+	constructor({ path, regionStageClass, cityStageClass, cardsStageClass, clusterName, logger }: wayConfig) {
 		this._path = path
-		this._fileName = fileName
 		this._logger = logger
 		this._regionStage = new regionStageClass(new cityStageClass(new cardsStageClass(xslxService), logger), logger, clusterName)
 	}
@@ -56,7 +54,7 @@ export default class RootStage {
 				this._logger.log('было закрыто окно браузера')
 			} else {
 				if (err.error?.code === 'EBUSY') {
-					this._logger.log(`В момент внесения записи файл ${this._fileName} был открыт`)
+					this._logger.log(`В момент внесения записи файл .xslx был открыт`)
 				}
 				await driver.quit()
 				this.go(fixedRegionNumber, fixedCityNumber)

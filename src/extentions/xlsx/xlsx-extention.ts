@@ -79,4 +79,4 @@ export default class XlsxExtention implements IXlsxExtention {
 	} as const
 }
 
-export const xslxService = new XlsxExtention('РТ все тарифы')
+export const xslxService = new XlsxExtention('РТ тарифы')

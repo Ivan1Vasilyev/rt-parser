@@ -32,6 +32,8 @@ export default class Logger {
 	log(message: string) {
 		const timestamp = new Date().toLocaleTimeString()
 		const logMessage = `[${timestamp}] ${message}\n`
+
+		// пишем файл вверх, потому что IDE не хочет сама скролить файл вниз
 		this._logs = logMessage + this._logs
 
 		fs.writeFileSync(this._logFilePath, this._logs)

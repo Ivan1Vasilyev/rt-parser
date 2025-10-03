@@ -19,7 +19,6 @@ const mainWayConfig: wayConfig = {
 	cityStageClass: CityStage,
 	cardsStageClass: CardStage,
 	logger: new Logger('main'),
-	fileName: 'РТ тарифы',
 	clusterName,
 }
 
@@ -29,7 +28,6 @@ const internetWayConfig: wayConfig = {
 	cityStageClass: CityStageInternet,
 	cardsStageClass: CardStageInternet,
 	logger: new Logger('internet'),
-	fileName: 'РТ тарифы интернет',
 	clusterName,
 }
 
@@ -39,7 +37,6 @@ const ranchoWayConfig: wayConfig = {
 	cityStageClass: CityStageInternet,
 	cardsStageClass: CardStageRancho,
 	logger: new Logger('rancho'),
-	fileName: 'РТ тарифы дача',
 	clusterName,
 }
 
