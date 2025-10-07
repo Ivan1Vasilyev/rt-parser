@@ -3,7 +3,7 @@ import DriverExtention from '../../extentions/driver/driver-extention'
 import CardStage from './card-stage'
 import clustersService from '../../services/cluster/cluster-service'
 import xslxService from '../../extentions/xlsx/xlsx-extention'
-import { tariffDataKeysEnum } from '../../extentions/models/i-xlsx-extention'
+import { tariffDataKeysEnum, tariffDataType } from '../../extentions/models/i-xlsx-extention'
 
 export default class CardStageInternet extends CardStage {
 	protected _oldPriceSelector: string = '.rt-price-v3__old-val'
@@ -80,12 +80,14 @@ export default class CardStageInternet extends CardStage {
 	protected _setStep = (counter: number, maxValue: number): boolean => counter > 0 && counter < maxValue
 
 	go = async (driver: DriverExtention, cardsContainer: WebElement, cityName: string, regionName: string) => {
+		const tariffData = [] as tariffDataType[]
+
 		const buttons = await driver.findArray('.landing-form-card', cardsContainer)
-		const currentTariffData = xslxService.getTemplate()
 		const cluster = clustersService.getCluster(regionName)
 		if (buttons.length) {
 			for (let l = 0; l < buttons.length; l++) {
 				if (this._setStep(l, buttons.length - 1)) continue
+				const currentTariffData = xslxService.getTemplate()
 
 				await buttons[l].click()
 				await driver.sleep(2000)
@@ -96,6 +98,8 @@ export default class CardStageInternet extends CardStage {
 				const [speed, tariffInfoAdd] = await this._parseOffers(driver, cardsContainer)
 
 				const tariffName = await this._getTariffName(driver, cardsContainer)
+
+				if (!tariffName.trim()) throw 'нет навания тарифа'
 
 				currentTariffData[tariffDataKeysEnum.cityName] = cityName
 				currentTariffData[tariffDataKeysEnum.tariffName] = tariffName
@@ -110,14 +114,18 @@ export default class CardStageInternet extends CardStage {
 				currentTariffData[tariffDataKeysEnum.region] = regionName
 				currentTariffData[tariffDataKeysEnum.cluster] = cluster
 
-				xslxService.push(currentTariffData)
+				tariffData.push(currentTariffData)
 			}
 		} else {
+			const currentTariffData = xslxService.getTemplate()
+
 			const [priceWithDiscount, price] = await this._parsePrices(driver, cardsContainer)
 			const [tariffInfo] = await this._parseTariffInfo(driver, cardsContainer)
 
 			const [speed, tariffInfoAdd] = await this._parseOffers(driver, cardsContainer)
 			const tariffName = await this._getTariffName(driver, cardsContainer)
+
+			if (!tariffName.trim()) throw 'нет навания тарифа'
 
 			currentTariffData[tariffDataKeysEnum.cityName] = cityName
 			currentTariffData[tariffDataKeysEnum.tariffName] = tariffName
@@ -127,9 +135,9 @@ export default class CardStageInternet extends CardStage {
 			currentTariffData[tariffDataKeysEnum.speed] = speed
 			currentTariffData[tariffDataKeysEnum.region] = regionName
 			currentTariffData[tariffDataKeysEnum.cluster] = cluster
-			xslxService.push(currentTariffData)
+			tariffData.push(currentTariffData)
 		}
 
-		xslxService.writeFile()
+		xslxService.writeFile(tariffData)
 	}
 }

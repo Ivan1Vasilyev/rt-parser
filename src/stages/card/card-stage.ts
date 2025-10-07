@@ -4,7 +4,7 @@ import { ICardStage } from '../models/i-card-stage'
 import selectors from '../../utils/selectors'
 import clustersService from '../../services/cluster/cluster-service'
 import xslxService from '../../extentions/xlsx/xlsx-extention'
-import { tariffDataKeysEnum } from '../../extentions/models/i-xlsx-extention'
+import { tariffDataKeysEnum, tariffDataType } from '../../extentions/models/i-xlsx-extention'
 
 export default class CardStage implements ICardStage {
 	protected _oldPriceSelector: string = selectors.oldPriceValue
@@ -139,6 +139,7 @@ export default class CardStage implements ICardStage {
 	}
 
 	go = async (driver: DriverExtention, cardsContainer: WebElement, cityName: string, regionName: string) => {
+		const tariffData = [] as tariffDataType[]
 		const tariffs = await driver.findArray(selectors.tariffs)
 
 		for (let l = 0; l < tariffs.length; l++) {
@@ -170,7 +171,7 @@ export default class CardStage implements ICardStage {
 			currentTariffData[tariffDataKeysEnum.region] = regionName
 			currentTariffData[tariffDataKeysEnum.cluster] = clustersService.getCluster(regionName)
 
-			xslxService.push(currentTariffData)
+			tariffData.push(currentTariffData)
 
 			const tariffsArrow = (await driver.findArray(selectors.tariffsArrow, cardsContainer))[0]
 			if (tariffsArrow && ((l > 1 && l <= tariffs.length - 4) || (tariffs.length < 14 && l > 0))) {
@@ -179,6 +180,6 @@ export default class CardStage implements ICardStage {
 			}
 		}
 
-		xslxService.writeFile()
+		xslxService.writeFile(tariffData)
 	}
 }

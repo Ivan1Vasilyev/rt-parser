@@ -25,16 +25,13 @@ class XlsxExtention implements IXlsxExtention {
 		this._path = path.join(dataDir, fileName)
 	}
 
-	writeFile = (): void => {
+	writeFile = (tariffData: tariffDataType[]): void => {
+		this._worksheet.push(...tariffData)
 		XLSX.utils.sheet_add_json(this._workbook.Sheets[this._SHEET_NAME], this._worksheet)
 		XLSX.writeFileXLSX(this._workbook, this._path)
 	}
 
 	getTemplate = (): tariffDataType => Object.values(tariffDataKeysEnum).reduce((obj, value) => ({ ...obj, [value]: '' }), {} as tariffDataType)
-
-	push = (tariffData: tariffDataType): void => {
-		this._worksheet.push(tariffData)
-	}
 
 	private setFileName = (fileName: string, dataDir: string): string => {
 		const date = new Date().toLocaleDateString()

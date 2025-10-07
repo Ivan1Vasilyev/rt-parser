@@ -32,7 +32,6 @@ export enum tariffDataKeysEnum {
 export type tariffDataType = Record<tariffDataKeysEnum, string | undefined>
 
 export interface IXlsxExtention {
-	writeFile(): void
+	writeFile(tariffData: tariffDataType[]): void
 	getTemplate(): tariffDataType
-	push(template: tariffDataType): void
 }
