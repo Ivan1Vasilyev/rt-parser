@@ -3,7 +3,14 @@ import Logger from '../../services/logger/log-service'
 import { ICardStage, ICardStageCtor } from './i-card-stage'
 
 export interface ICityStage {
-	go(driver: DriverExtention, citiesLength: number, regionName: string, i: number, regionNumber: number | undefined, cityNumber: number | undefined): Promise<void>
+	go(
+		driver: DriverExtention,
+		citiesLength: number,
+		regionName: string,
+		currentRegionIndex: number,
+		regionNumber: number | undefined,
+		cityNumber: number | undefined
+	): Promise<void>
 }
 
 export interface ICityStageCtor {

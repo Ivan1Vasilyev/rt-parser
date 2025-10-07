@@ -19,10 +19,17 @@ export default class CityStage implements ICityStage {
 		this._logger = logger
 	}
 
-	go = async (driver: DriverExtention, citiesLength: number, regionName: string, i: number, regionNumber: number | undefined, cityNumber: number | undefined) => {
+	go = async (
+		driver: DriverExtention,
+		citiesLength: number,
+		regionName: string,
+		currentRegionIndex: number,
+		regionNumber: number | undefined,
+		cityNumber: number | undefined
+	) => {
 		for (let j = 0; j < citiesLength; j++) {
 			try {
-				if (cityNumber && regionNumber === i && cityNumber > j) j = cityNumber
+				if (cityNumber && regionNumber === currentRegionIndex && cityNumber > j) j = cityNumber
 
 				if (this._isRefreshed) {
 					await driver.waitElementLocated(this._logger, selectors.currentCity, 'currentCity after refresh', async () => await driver.refresh())
@@ -33,7 +40,7 @@ export default class CityStage implements ICityStage {
 					await driver.waitElementLocated(this._logger, selectors.cities, 'cities', async () => {
 						await driver.openRegions(this._logger)
 						await driver.waitElementLocated(this._logger, selectors.regions, 'regions after cities', async () => await driver.openRegions(this._logger))
-						const region = await driver.unsafeFind(selectors.regions, i)
+						const region = await driver.unsafeFind(selectors.regions, currentRegionIndex)
 						await region.click()
 					})
 
@@ -92,7 +99,7 @@ export default class CityStage implements ICityStage {
 
 				if (j < citiesLength - 1) {
 					await driver.waitElementLocated(this._logger, selectors.regions, `cities end. City - ${this._cityName}`, async () => await driver.openRegions(this._logger))
-					const currentRegion = (await driver.findArray(selectors.regions))[i]
+					const currentRegion = (await driver.findArray(selectors.regions))[currentRegionIndex]
 					await currentRegion.click()
 					await driver.sleep(1000)
 				}
