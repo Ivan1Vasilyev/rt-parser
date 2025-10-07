@@ -85,16 +85,16 @@ export default class CardStageInternet extends CardStage {
 		const buttons = await driver.findArray('.landing-form-card', cardsContainer)
 		const cluster = clustersService.getCluster(regionName)
 		if (buttons.length) {
-			for (let l = 0; l < buttons.length; l++) {
-				if (this._setStep(l, buttons.length - 1)) continue
+			for (let i = 0; i < buttons.length; i++) {
+				if (this._setStep(i, buttons.length - 1)) continue
 				const currentTariffData = xslxService.getTemplate()
 
-				await buttons[l].click()
+				await buttons[i].click()
 				await driver.sleep(2000)
 
-				const [priceWithDiscount, price] = await this._parsePrices(driver, buttons[l])
+				const [priceWithDiscount, price] = await this._parsePrices(driver, buttons[i])
 				const [tariffInfo] = await this._parseTariffInfo(driver, cardsContainer)
-				const [discountDuration, priceInfo, discountMark] = await this._parsePriceAndDiscountInfo(driver, buttons[l])
+				const [discountDuration, priceInfo, discountMark] = await this._parsePriceAndDiscountInfo(driver, buttons[i])
 				const [speed, tariffInfoAdd] = await this._parseOffers(driver, cardsContainer)
 
 				const tariffName = await this._getTariffName(driver, cardsContainer)

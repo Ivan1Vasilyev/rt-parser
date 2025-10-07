@@ -27,9 +27,9 @@ export default class CityStage implements ICityStage {
 		regionNumber: number | undefined,
 		cityNumber: number | undefined
 	) => {
-		for (let j = 0; j < citiesLength; j++) {
+		for (let i = 0; i < citiesLength; i++) {
 			try {
-				if (cityNumber && regionNumber === currentRegionIndex && cityNumber > j) j = cityNumber
+				if (cityNumber && regionNumber === currentRegionIndex && cityNumber > i) i = cityNumber
 
 				if (this._isRefreshed) {
 					await driver.waitElementLocated(this._logger, selectors.currentCity, 'currentCity after refresh', async () => await driver.refresh())
@@ -44,7 +44,7 @@ export default class CityStage implements ICityStage {
 						await region.click()
 					})
 
-					const city = await driver.unsafeFind(selectors.cities, j)
+					const city = await driver.unsafeFind(selectors.cities, i)
 					this._cityName = await city.getText()
 
 					await city.click()
@@ -72,7 +72,7 @@ export default class CityStage implements ICityStage {
 						this._logger.log(`refreshed in loading tariffs. City: ${this._cityName}`, logStateEnum.warning)
 						this._isRefreshed = true
 						counter = 0
-						j--
+						i--
 						await driver.sleep(1000)
 						break
 					}
@@ -81,7 +81,7 @@ export default class CityStage implements ICityStage {
 				if (this._isRefreshed) continue
 
 				if (noData.length) {
-					this._logger.log(`в ${this._cityName} нет тарифов. ${j + 1} из ${citiesLength}`, logStateEnum.warning)
+					this._logger.log(`в ${this._cityName} нет тарифов. ${i + 1} из ${citiesLength}`, logStateEnum.warning)
 				} else {
 					const cardsContainer = await driver.findElement(By.css(this._containerSelector))
 					await driver.acceptCookes()
@@ -92,19 +92,19 @@ export default class CityStage implements ICityStage {
 
 					await this._cardStageClass.go(driver, cardsContainer, this._cityName, regionName)
 
-					this._logger.log(`сбор данных в ${this._cityName} завершён. ${j + 1} из ${citiesLength}`)
+					this._logger.log(`сбор данных в ${this._cityName} завершён. ${i + 1} из ${citiesLength}`)
 				}
 
 				await driver.openRegions(this._logger)
 
-				if (j < citiesLength - 1) {
+				if (i < citiesLength - 1) {
 					await driver.waitElementLocated(this._logger, selectors.regions, `cities end. City - ${this._cityName}`, async () => await driver.openRegions(this._logger))
 					const currentRegion = (await driver.findArray(selectors.regions))[currentRegionIndex]
 					await currentRegion.click()
 					await driver.sleep(1000)
 				}
 			} catch (err) {
-				throw { error: err, cityNumber: j }
+				throw { error: err, cityNumber: i }
 			}
 		}
 	}

@@ -142,13 +142,13 @@ export default class CardStage implements ICardStage {
 		const tariffData = [] as tariffDataType[]
 		const tariffs = await driver.findArray(selectors.tariffs)
 
-		for (let l = 0; l < tariffs.length; l++) {
+		for (let i = 0; i < tariffs.length; i++) {
 			const currentTariffData = xslxService.getTemplate()
-			const [priceWithDiscount, price] = await this._parsePrices(driver, tariffs[l])
-			const [tariffInfo, routerForRent, TVBoxForRent, TVBoxToBuy] = await this._parseTariffInfo(driver, tariffs[l])
-			const [discountDuration, priceInfo, discountMark] = await this._parsePriceAndDiscountInfo(driver, tariffs[l], tariffInfo)
-			const [speed, interactiveTV, GB, minutes, SMS] = await this._parseOffers(driver, tariffs[l])
-			const tariffName = await this._getTariffName(driver, tariffs[l])
+			const [priceWithDiscount, price] = await this._parsePrices(driver, tariffs[i])
+			const [tariffInfo, routerForRent, TVBoxForRent, TVBoxToBuy] = await this._parseTariffInfo(driver, tariffs[i])
+			const [discountDuration, priceInfo, discountMark] = await this._parsePriceAndDiscountInfo(driver, tariffs[i], tariffInfo)
+			const [speed, interactiveTV, GB, minutes, SMS] = await this._parseOffers(driver, tariffs[i])
+			const tariffName = await this._getTariffName(driver, tariffs[i])
 
 			if (!tariffName.trim()) throw 'нет навания тарифа'
 
@@ -174,7 +174,7 @@ export default class CardStage implements ICardStage {
 			tariffData.push(currentTariffData)
 
 			const tariffsArrow = (await driver.findArray(selectors.tariffsArrow, cardsContainer))[0]
-			if (tariffsArrow && ((l > 1 && l <= tariffs.length - 4) || (tariffs.length < 14 && l > 0))) {
+			if (tariffsArrow && ((i > 1 && i <= tariffs.length - 4) || (tariffs.length < 14 && i > 0))) {
 				await tariffsArrow.click()
 				await driver.sleep(2000)
 			}
