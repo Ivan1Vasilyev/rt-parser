@@ -7,7 +7,7 @@ import Logger from '../../services/logger/log-service'
 import { logStateEnum } from '../../services/models/log-state'
 
 export default class CityStage implements ICityStage {
-	protected _refreshed: boolean = false
+	protected _isRefreshed: boolean = false
 	protected _cityName: string = ''
 	protected _cardStageClass: ICardStage
 	protected _tariffsSelector: string = selectors.tariffs
@@ -24,10 +24,10 @@ export default class CityStage implements ICityStage {
 			try {
 				if (cityNumber && regionNumber === i && cityNumber > j) j = cityNumber
 
-				if (this._refreshed) {
+				if (this._isRefreshed) {
 					await driver.waitElementLocated(this._logger, selectors.currentCity, 'currentCity after refresh', async () => await driver.refresh())
 
-					this._refreshed = false
+					this._isRefreshed = false
 				} else {
 					await driver.waitElementLocated(this._logger, selectors.regions, 'regions', async () => await driver.openRegions(this._logger))
 					await driver.waitElementLocated(this._logger, selectors.cities, 'cities', async () => {
@@ -63,7 +63,7 @@ export default class CityStage implements ICityStage {
 					if (counter > 8) {
 						await driver.refresh()
 						this._logger.log(`refreshed in loading tariffs. City: ${this._cityName}`, logStateEnum.warning)
-						this._refreshed = true
+						this._isRefreshed = true
 						counter = 0
 						j--
 						await driver.sleep(1000)
@@ -71,7 +71,7 @@ export default class CityStage implements ICityStage {
 					}
 				}
 
-				if (this._refreshed) continue
+				if (this._isRefreshed) continue
 
 				if (noData.length) {
 					this._logger.log(`в ${this._cityName} нет тарифов. ${j + 1} из ${citiesLength}`, logStateEnum.warning)

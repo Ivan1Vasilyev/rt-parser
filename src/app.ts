@@ -10,7 +10,6 @@ import { wayConfig } from './stages/models/way-config'
 import { clusterNamesEnum } from './services/models/cluster'
 
 let clusterName: clusterNamesEnum | undefined
-
 // clusterName = clusterNamesEnum.east
 
 const mainWayConfig: wayConfig = {
