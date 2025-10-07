@@ -1,20 +1,20 @@
 import fs from 'fs'
 import path from 'path'
+import { logStateEnum } from '../models/log-state'
 
 export default class Logger {
 	private _logFileName: string
-	private _logsDir: string
+	private _logsDir: string = './logs'
 	private _logFilePath: any
 	private _logs: string = ''
-	private _states: logState = {
+	private _states: Record<logStateEnum, string> = {
 		[logStateEnum.error]: 'ERROR! ',
 		[logStateEnum.warning]: 'WARNING! ',
 		[logStateEnum.default]: '',
 	}
 
-	constructor(logFileName: string = 'app') {
+	constructor(logFileName: string = 'logs') {
 		this._logFileName = `${logFileName}.log`
-		this._logsDir = './logs'
 		this._logFilePath = path.join(this._logsDir, this._logFileName)
 
 		if (!fs.existsSync(this._logsDir)) {
@@ -36,8 +36,6 @@ export default class Logger {
 
 	log(message: string, state: logStateEnum = logStateEnum.default) {
 		const timestamp = new Date().toLocaleTimeString()
-		// const logMessage = `[${timestamp}] ${message}\n`
-
 		const logMessage = `[${timestamp}] ${this._states[state]}${message}\n`
 
 		// пишем файл вверх, потому что IDE не хочет сама скролить файл вниз
@@ -45,16 +43,4 @@ export default class Logger {
 
 		fs.writeFileSync(this._logFilePath, this._logs)
 	}
-}
-
-export enum logStateEnum {
-	error,
-	warning,
-	default,
-}
-
-type logState = {
-	[logStateEnum.error]: string
-	[logStateEnum.warning]: string
-	[logStateEnum.default]: string
 }

@@ -1,12 +1,12 @@
 import DriverExtention from '../../extentions/driver/driver-extention'
-import { ClusterNamesType } from '../../services/cluster/cluster-service'
 import Logger from '../../services/logger/log-service'
-import { ICityStage } from '../city/i-city-stage'
+import { clusterNamesEnum } from '../../services/models/cluster'
+import { ICityStage } from './i-city-stage'
 
 export interface IRegionStage {
 	go(driver: DriverExtention, regionsLength: number, regionNumber: number | undefined, cityNumber: number | undefined): Promise<void>
 }
 
 export interface IRegionStageCtor {
-	new (cityStage: ICityStage, logger: Logger, clusterName: ClusterNamesType | undefined): IRegionStage
+	new (cityStage: ICityStage, logger: Logger, clusterName: clusterNamesEnum | undefined): IRegionStage
 }

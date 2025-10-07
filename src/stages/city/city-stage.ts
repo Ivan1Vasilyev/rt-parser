@@ -1,9 +1,10 @@
 import { By } from 'selenium-webdriver'
 import selectors from '../../utils/selectors'
-import { ICityStage } from './i-city-stage'
+import { ICityStage } from '../models/i-city-stage'
 import DriverExtention from '../../extentions/driver/driver-extention'
-import { ICardStage } from '../card/i-card-stage'
-import Logger, { logStateEnum } from '../../services/logger/log-service'
+import { ICardStage } from '../models/i-card-stage'
+import Logger from '../../services/logger/log-service'
+import { logStateEnum } from '../../services/models/log-state'
 
 export default class CityStage implements ICityStage {
 	protected _refreshed: boolean = false

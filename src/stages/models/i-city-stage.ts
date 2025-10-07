@@ -1,6 +1,6 @@
 import DriverExtention from '../../extentions/driver/driver-extention'
 import Logger from '../../services/logger/log-service'
-import { ICardStage, ICardStageCtor } from '../card/i-card-stage'
+import { ICardStage, ICardStageCtor } from './i-card-stage'
 
 export interface ICityStage {
 	go(driver: DriverExtention, citiesLength: number, regionName: string, i: number, regionNumber: number | undefined, cityNumber: number | undefined): Promise<void>

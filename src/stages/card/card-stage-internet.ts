@@ -3,6 +3,7 @@ import DriverExtention from '../../extentions/driver/driver-extention'
 import CardStage from './card-stage'
 import clustersService from '../../services/cluster/cluster-service'
 import xslxService from '../../extentions/xlsx/xlsx-extention'
+import { tariffDataKeysEnum } from '../../extentions/models/i-xlsx-extention'
 
 export default class CardStageInternet extends CardStage {
 	protected _oldPriceSelector: string = '.rt-price-v3__old-val'
@@ -13,7 +14,7 @@ export default class CardStageInternet extends CardStage {
 		const priceInfoElem = await driver.findArray('.landing-form-card__desc', button)
 		if (priceInfoElem.length) {
 			const priceInfo = await priceInfoElem[0].getText()
-			const matches = priceInfo.match(/скидк[уа]\s(\d{1,2}%\s)?на\s(\d{1,2})\s(дней|месяц[а(ев)]?)/)
+			const matches = priceInfo.match(this._discountRegex)
 			if (matches) {
 				const resultPriceInfo = `${matches[2] || ''} ${matches[3] || ''} со скидкой ${matches[1] || ''}`
 				const discountDuration = /месяц/i.test(priceInfo) ? matches[3] : ''
@@ -96,18 +97,18 @@ export default class CardStageInternet extends CardStage {
 
 				const tariffName = await this._getTariffName(driver, cardsContainer)
 
-				currentTariffData[xslxService.KEYS.cityName] = cityName
-				currentTariffData[xslxService.KEYS.tariffName] = tariffName
-				currentTariffData[xslxService.KEYS.priceWithDiscount] = priceWithDiscount
-				currentTariffData[xslxService.KEYS.price] = price
-				currentTariffData[xslxService.KEYS.discountDuration] = discountDuration
-				currentTariffData[xslxService.KEYS.priceInfo] = priceInfo
-				currentTariffData[xslxService.KEYS.discountMark] = discountMark
-				currentTariffData[xslxService.KEYS.discountMark] = priceInfo ? '1' : ''
-				currentTariffData[xslxService.KEYS.tariffInfo] = tariffInfo + tariffInfoAdd
-				currentTariffData[xslxService.KEYS.speed] = speed
-				currentTariffData[xslxService.KEYS.region] = regionName
-				currentTariffData[xslxService.KEYS.cluster] = cluster
+				currentTariffData[tariffDataKeysEnum.cityName] = cityName
+				currentTariffData[tariffDataKeysEnum.tariffName] = tariffName
+				currentTariffData[tariffDataKeysEnum.priceWithDiscount] = priceWithDiscount
+				currentTariffData[tariffDataKeysEnum.price] = price
+				currentTariffData[tariffDataKeysEnum.discountDuration] = discountDuration
+				currentTariffData[tariffDataKeysEnum.priceInfo] = priceInfo
+				currentTariffData[tariffDataKeysEnum.discountMark] = discountMark
+				currentTariffData[tariffDataKeysEnum.discountMark] = priceInfo ? '1' : ''
+				currentTariffData[tariffDataKeysEnum.tariffInfo] = tariffInfo + tariffInfoAdd
+				currentTariffData[tariffDataKeysEnum.speed] = speed
+				currentTariffData[tariffDataKeysEnum.region] = regionName
+				currentTariffData[tariffDataKeysEnum.cluster] = cluster
 
 				xslxService.push(currentTariffData)
 			}
@@ -118,14 +119,14 @@ export default class CardStageInternet extends CardStage {
 			const [speed, tariffInfoAdd] = await this._parseOffers(driver, cardsContainer)
 			const tariffName = await this._getTariffName(driver, cardsContainer)
 
-			currentTariffData[xslxService.KEYS.cityName] = cityName
-			currentTariffData[xslxService.KEYS.tariffName] = tariffName
-			currentTariffData[xslxService.KEYS.priceWithDiscount] = priceWithDiscount
-			currentTariffData[xslxService.KEYS.price] = price
-			currentTariffData[xslxService.KEYS.tariffInfo] = tariffInfo + tariffInfoAdd
-			currentTariffData[xslxService.KEYS.speed] = speed
-			currentTariffData[xslxService.KEYS.region] = regionName
-			currentTariffData[xslxService.KEYS.cluster] = cluster
+			currentTariffData[tariffDataKeysEnum.cityName] = cityName
+			currentTariffData[tariffDataKeysEnum.tariffName] = tariffName
+			currentTariffData[tariffDataKeysEnum.priceWithDiscount] = priceWithDiscount
+			currentTariffData[tariffDataKeysEnum.price] = price
+			currentTariffData[tariffDataKeysEnum.tariffInfo] = tariffInfo + tariffInfoAdd
+			currentTariffData[tariffDataKeysEnum.speed] = speed
+			currentTariffData[tariffDataKeysEnum.region] = regionName
+			currentTariffData[tariffDataKeysEnum.cluster] = cluster
 			xslxService.push(currentTariffData)
 		}
 

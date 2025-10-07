@@ -1,9 +1,4 @@
-import { WEST_CLUSTER_NAME, NORTH_CLUSTER_NAME, EAST_CLUSTER_NAME, NORTH_WEST_CENTER_MOSCOW_CLUSTER_NAME } from './cluster-names'
-
-const clusterNames = [WEST_CLUSTER_NAME, NORTH_CLUSTER_NAME, EAST_CLUSTER_NAME, NORTH_WEST_CENTER_MOSCOW_CLUSTER_NAME] as const
-
-export type ClusterNamesType = (typeof clusterNames)[number]
-type clustersType = Record<ClusterNamesType, string[]>
+import { clustersType, clusterNamesEnum } from '../models/cluster'
 
 class ClusterService {
 	_eastRegions = [
@@ -91,22 +86,20 @@ class ClusterService {
 	]
 
 	_clusters: clustersType = {
-		Восток: this._eastRegions,
-		Запад: this._westRegions,
-		Юг: this._southRegions,
-		'Северо-Запад, Центр, Москва': this.northWestCenterMoscowRegions,
+		[clusterNamesEnum.east]: this._eastRegions,
+		[clusterNamesEnum.west]: this._westRegions,
+		[clusterNamesEnum.north]: this._southRegions,
+		[clusterNamesEnum.northWestCenterMoscow]: this.northWestCenterMoscowRegions,
 	}
 
-	getRegionsByCluster(clusterName: ClusterNamesType): string[] {
-		return this._clusters[clusterName]
-	}
+	getRegionsByCluster = (clusterName: clusterNamesEnum): string[] => this._clusters[clusterName]
 
 	_UNKNUWN_CLUSTER = 'вне известных кластеров'
 
-	getCluster(regionName: string): ClusterNamesType | typeof this._UNKNUWN_CLUSTER {
-		for (let i = 0; i < clusterNames.length; i++) {
-			if (this._clusters[clusterNames[i]].some((r: string) => regionName.includes(r))) {
-				return clusterNames[i]
+	getCluster(regionName: string): clusterNamesEnum | typeof this._UNKNUWN_CLUSTER {
+		for (const key of Object.values(clusterNamesEnum)) {
+			if (this._clusters[key].some((r: string) => regionName.includes(r))) {
+				return key
 			}
 		}
 

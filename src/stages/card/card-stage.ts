@@ -1,14 +1,16 @@
 import { WebElement } from 'selenium-webdriver'
 import DriverExtention from '../../extentions/driver/driver-extention'
-import { ICardStage } from './i-card-stage'
+import { ICardStage } from '../models/i-card-stage'
 import selectors from '../../utils/selectors'
 import clustersService from '../../services/cluster/cluster-service'
 import xslxService from '../../extentions/xlsx/xlsx-extention'
+import { tariffDataKeysEnum } from '../../extentions/models/i-xlsx-extention'
 
 export default class CardStage implements ICardStage {
 	protected _oldPriceSelector: string = selectors.oldPriceValue
 	protected _priceSelector: string = selectors.priceValue
 	protected _tariffNameSelector: string = selectors.tariffName
+	protected _discountRegex = new RegExp(/скидк[уа]\s(\d{1,2}%\s)?на\s(\d{1,2})\s(дней|месяц[а(ев)]?)/i)
 
 	constructor() {}
 
@@ -93,7 +95,7 @@ export default class CardStage implements ICardStage {
 			let priceInfo = discountMarkText.length > 1 && !/топ/i.test(discountMarkText) ? `${buttonText || 'Скидка:'} ${discountMarkText}` : buttonText
 			const discountDuration = /месяц/i.test(buttonText) ? this._getDigits(buttonText) : ''
 			if (!priceInfo) {
-				const matches = tariffInfo.match(/скидк[уа]\s(\d{1,2}%\s)?на\s(\d{1,2})\s(дней|месяц[а(ев)]?)/)
+				const matches = tariffInfo.match(this._discountRegex)
 				if (matches) {
 					priceInfo = `${matches[2] || ''} ${matches[3] || ''} со скидкой ${matches[1] || ''}`
 				}
@@ -149,24 +151,24 @@ export default class CardStage implements ICardStage {
 
 			if (!tariffName.trim()) throw 'нет навания тарифа'
 
-			currentTariffData[xslxService.KEYS.cityName] = cityName
-			currentTariffData[xslxService.KEYS.tariffName] = tariffName
-			currentTariffData[xslxService.KEYS.priceWithDiscount] = priceWithDiscount
-			currentTariffData[xslxService.KEYS.price] = price
-			currentTariffData[xslxService.KEYS.discountDuration] = discountDuration
-			currentTariffData[xslxService.KEYS.priceInfo] = priceInfo
-			currentTariffData[xslxService.KEYS.discountMark] = discountMark
-			currentTariffData[xslxService.KEYS.tariffInfo] = tariffInfo
-			currentTariffData[xslxService.KEYS.routerForRent] = routerForRent
-			currentTariffData[xslxService.KEYS.TVBoxForRent] = TVBoxForRent
-			currentTariffData[xslxService.KEYS.TVBoxToBuy] = TVBoxToBuy
-			currentTariffData[xslxService.KEYS.speed] = speed
-			currentTariffData[xslxService.KEYS.interactiveTV] = interactiveTV
-			currentTariffData[xslxService.KEYS.GB] = GB
-			currentTariffData[xslxService.KEYS.minutes] = minutes
-			currentTariffData[xslxService.KEYS.SMS] = SMS
-			currentTariffData[xslxService.KEYS.region] = regionName
-			currentTariffData[xslxService.KEYS.cluster] = clustersService.getCluster(regionName)
+			currentTariffData[tariffDataKeysEnum.cityName] = cityName
+			currentTariffData[tariffDataKeysEnum.tariffName] = tariffName
+			currentTariffData[tariffDataKeysEnum.priceWithDiscount] = priceWithDiscount
+			currentTariffData[tariffDataKeysEnum.price] = price
+			currentTariffData[tariffDataKeysEnum.discountDuration] = discountDuration
+			currentTariffData[tariffDataKeysEnum.priceInfo] = priceInfo
+			currentTariffData[tariffDataKeysEnum.discountMark] = discountMark
+			currentTariffData[tariffDataKeysEnum.tariffInfo] = tariffInfo
+			currentTariffData[tariffDataKeysEnum.routerForRent] = routerForRent
+			currentTariffData[tariffDataKeysEnum.TVBoxForRent] = TVBoxForRent
+			currentTariffData[tariffDataKeysEnum.TVBoxToBuy] = TVBoxToBuy
+			currentTariffData[tariffDataKeysEnum.speed] = speed
+			currentTariffData[tariffDataKeysEnum.interactiveTV] = interactiveTV
+			currentTariffData[tariffDataKeysEnum.GB] = GB
+			currentTariffData[tariffDataKeysEnum.minutes] = minutes
+			currentTariffData[tariffDataKeysEnum.SMS] = SMS
+			currentTariffData[tariffDataKeysEnum.region] = regionName
+			currentTariffData[tariffDataKeysEnum.cluster] = clustersService.getCluster(regionName)
 
 			xslxService.push(currentTariffData)
 

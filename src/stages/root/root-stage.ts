@@ -1,19 +1,9 @@
 import DriverExtention from '../../extentions/driver/driver-extention'
-import { ClusterNamesType } from '../../services/cluster/cluster-service'
-import Logger, { logStateEnum } from '../../services/logger/log-service'
+import Logger from '../../services/logger/log-service'
+import { logStateEnum } from '../../services/models/log-state'
 import selectors from '../../utils/selectors'
-import { ICardStageCtor } from '../card/i-card-stage'
-import { ICityStageCtor } from '../city/i-city-stage'
-import { IRegionStage, IRegionStageCtor } from '../region/i-region-stage'
-
-export type wayConfig = {
-	path: string
-	regionStageClass: IRegionStageCtor
-	cityStageClass: ICityStageCtor
-	cardsStageClass: ICardStageCtor
-	logger: Logger
-	clusterName: ClusterNamesType | undefined
-}
+import { IRegionStage } from '../models/i-region-stage'
+import { wayConfig } from '../models/way-config'
 
 export default class RootStage {
 	private _path: string

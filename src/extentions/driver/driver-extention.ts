@@ -1,8 +1,9 @@
 import { By, until, Builder, Browser, ThenableWebDriver, WebElement, Locator, WebElementCondition } from 'selenium-webdriver'
 import chrome from 'selenium-webdriver/chrome.js'
 import selectors from '../../utils/selectors'
-import { IDriverExtention } from './i-driver-extention'
-import Logger, { logStateEnum } from '../../services/logger/log-service'
+import { IDriverExtention } from '../models/i-driver-extention'
+import Logger from '../../services/logger/log-service'
+import { logStateEnum } from '../../services/models/log-state'
 
 export default class DriverExtention implements IDriverExtention {
 	private _driver: ThenableWebDriver

@@ -1,5 +1,5 @@
 import Logger from '../../services/logger/log-service'
-import { ICardStage } from '../card/i-card-stage'
+import { ICardStage } from '../models/i-card-stage'
 import CityStage from './city-stage'
 
 export default class CityStageInternet extends CityStage {

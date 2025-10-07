@@ -1,17 +1,17 @@
-import RootStage, { wayConfig } from './stages/root/root-stage'
+import RootStage from './stages/root/root-stage'
 import CityStage from './stages/city/city-stage'
 import CardStage from './stages/card/card-stage'
-import { EAST_CLUSTER_NAME, WEST_CLUSTER_NAME, NORTH_CLUSTER_NAME, NORTH_WEST_CENTER_MOSCOW_CLUSTER_NAME } from './services/cluster/cluster-names'
 import RegionStage from './stages/region/region-stage'
-import { ClusterNamesType } from './services/cluster/cluster-service'
 import CityStageInternet from './stages/city/city-stage-internet'
 import CardStageInternet from './stages/card/card-stage-internet'
 import CardStageRancho from './stages/card/card-stage-rancho'
 import Logger from './services/logger/log-service'
+import { wayConfig } from './stages/models/way-config'
+import { clusterNamesEnum } from './services/models/cluster'
 
-let clusterName: ClusterNamesType | undefined
+let clusterName: clusterNamesEnum | undefined
 
-// clusterName = NORTH_WEST_CENTER_MOSCOW_CLUSTER_NAME
+// clusterName = clusterNamesEnum.east
 
 const mainWayConfig: wayConfig = {
 	path: 'packages/tariffs',

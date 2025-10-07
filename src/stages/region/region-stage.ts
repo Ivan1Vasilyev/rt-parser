@@ -1,16 +1,18 @@
 import selectors from '../../utils/selectors'
-import { ICityStage } from '../city/i-city-stage'
+import { ICityStage } from '../models/i-city-stage'
 import DriverExtention from '../../extentions/driver/driver-extention'
-import clustersService, { ClusterNamesType } from '../../services/cluster/cluster-service'
-import { IRegionStage } from './i-region-stage'
-import Logger, { logStateEnum } from '../../services/logger/log-service'
+import clustersService from '../../services/cluster/cluster-service'
+import { IRegionStage } from '../models/i-region-stage'
+import Logger from '../../services/logger/log-service'
+import { logStateEnum } from '../../services/models/log-state'
+import { clusterNamesEnum } from '../../services/models/cluster'
 
 export default class RegionStage implements IRegionStage {
 	private _cityStage: ICityStage
 	private _clusters?: string[]
 	private _logger: Logger
 
-	constructor(cityStage: ICityStage, logger: Logger, clusterName?: ClusterNamesType) {
+	constructor(cityStage: ICityStage, logger: Logger, clusterName?: clusterNamesEnum) {
 		this._cityStage = cityStage
 		this._logger = logger
 		if (clusterName) {
