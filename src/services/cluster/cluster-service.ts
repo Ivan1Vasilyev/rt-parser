@@ -90,20 +90,19 @@ class ClusterService {
 		[clusterNamesEnum.west]: this._westRegions,
 		[clusterNamesEnum.north]: this._southRegions,
 		[clusterNamesEnum.northWestCenterMoscow]: this.northWestCenterMoscowRegions,
+		[clusterNamesEnum.unknown]: [],
 	}
 
 	getRegionsByCluster = (clusterName: clusterNamesEnum): string[] => this._clusters[clusterName]
 
-	_UNKNUWN_CLUSTER = 'вне известных кластеров'
-
-	getCluster(regionName: string): clusterNamesEnum | typeof this._UNKNUWN_CLUSTER {
+	getCluster(regionName: string): clusterNamesEnum {
 		for (const key of Object.values(clusterNamesEnum)) {
 			if (this._clusters[key].some((r: string) => regionName.includes(r))) {
 				return key
 			}
 		}
 
-		return this._UNKNUWN_CLUSTER
+		return clusterNamesEnum.unknown
 	}
 }
 
