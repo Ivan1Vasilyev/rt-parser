@@ -83,15 +83,13 @@ export default class DriverExtention implements IDriverExtention {
 		}
 	}
 
-	navigate = () => this._driver.navigate()
-
 	waitElementLocated = async (logger: Logger, selector: string, place: string, action: Function) => {
 		while (true) {
 			try {
 				const isElementLocated = await this.wait(until.elementLocated(By.css(selector)), 50000)
 				if (isElementLocated) break
 			} catch (e) {
-				await this.navigate().refresh()
+				await this.refresh()
 				logger.log(`refreshed in ${place}`, logStateEnum.warning)
 				await this.sleep(5000)
 				if (action) {
@@ -104,7 +102,7 @@ export default class DriverExtention implements IDriverExtention {
 	}
 
 	clickCurrentCity = async (logger: Logger) => {
-		await this.waitElementLocated(logger, selectors.currentCity, 'currentCity', async () => await this.navigate().refresh())
+		await this.waitElementLocated(logger, selectors.currentCity, 'currentCity', async () => await this.refresh())
 		const currentCity = await this.unsafeFind(selectors.currentCity)
 		await currentCity.click()
 		await this.sleep(2000)

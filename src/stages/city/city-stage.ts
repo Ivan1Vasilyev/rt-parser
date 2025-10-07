@@ -25,7 +25,7 @@ export default class CityStage implements ICityStage {
 				if (cityNumber && regionNumber === i && cityNumber > j) j = cityNumber
 
 				if (this._refreshed) {
-					await driver.waitElementLocated(this._logger, selectors.currentCity, 'currentCity after refresh', async () => await driver.navigate().refresh())
+					await driver.waitElementLocated(this._logger, selectors.currentCity, 'currentCity after refresh', async () => await driver.refresh())
 
 					this._refreshed = false
 				} else {

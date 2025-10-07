@@ -46,7 +46,7 @@ export default class RegionStage implements IRegionStage {
 					this._logger.log(`В регионе ${regionName} не загрузились города`, logStateEnum.warning)
 					this._logger.log(`Индекс региона: ${i}`, logStateEnum.warning)
 
-					await driver.navigate().refresh()
+					await driver.refresh()
 					await driver.sleep(3000)
 					await driver.openRegions(this._logger)
 
