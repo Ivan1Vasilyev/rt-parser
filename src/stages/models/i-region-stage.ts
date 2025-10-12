@@ -1,6 +1,6 @@
 import DriverExtention from '../../extentions/driver/driver-extention'
 import Logger from '../../services/logger/log-service'
-import { clusterNamesEnum } from '../../services/models/cluster'
+import { clusterConfigType } from '../../services/models/cluster'
 import { ICityStage } from './i-city-stage'
 
 export interface IRegionStage {
@@ -8,5 +8,5 @@ export interface IRegionStage {
 }
 
 export interface IRegionStageCtor {
-	new (cityStage: ICityStage, logger: Logger, clusterName: clusterNamesEnum | undefined): IRegionStage
+	new (cityStage: ICityStage, logger: Logger, clusterConfig: clusterConfigType): IRegionStage
 }

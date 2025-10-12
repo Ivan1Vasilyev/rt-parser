@@ -1,99 +1,112 @@
-import { clustersType, clusterNamesEnum } from '../models/cluster'
+import { clustersType, clusterNamesEnum, clusterConfigType } from '../models/cluster'
 
 class ClusterService {
 	_eastRegions = [
-		'Амурская',
-		'Еврейская',
-		'Камчатский',
-		'Магаданская',
-		'Приморский',
-		'Сахалинская',
-		'Хабаровский',
-		'Алтайский',
-		'Забайкальский',
-		'Новосибирская',
 		'Алтай',
+		'Алтайский',
+		'Амурская',
 		'Бурятия',
-		'Саха',
+		'Еврейская',
+		'Забайкальский',
 		'Иркутская',
+		'Камчатский',
 		'Кемеровская',
 		'Красноярский',
-		'Омская',
-		'Тыва',
-		'Хакасия',
-		'Томская',
 		'Курганская',
+		'Магаданская',
+		'Новосибирская',
+		'Омская',
 		'Пермский',
+		'Приморский',
+		'Саха',
+		'Сахалинская',
 		'Свердловская',
+		'Томская',
+		'Тыва',
 		'Тюменская',
+		'Хабаровский',
+		'Хакасия',
 		'Ханты-Мансийский',
 		'Челябинская',
-		'Ямало-Ненецкий',
 		'Чукотский',
+		'Ямало-Ненецкий',
 	]
 
 	_southRegions = [
-		'Нижегородская',
-		'Марий Эл',
+		'Адыгея',
+		'Астраханская',
+		'Башкортостан',
+		'Волгоградская',
+		'Дагестан',
+		'Ингушетия',
+		'Кабардино Балкарская',
+		'Калмыкия',
+		'Карачаево Черкесская',
 		'Кировская',
-		'Нижегородская',
-		'Пензенская',
+		'Краснодарский край',
+		'Марий Эл',
 		'Мордовия',
-		'Удмуртская',
+		'Нижегородская',
 		'Оренбургская',
-		'Саратовская',
+		'Пензенская',
+		'Ростовская',
 		'Самарская',
+		'Саратовская',
+		'Северная Осетия',
+		'Ставропольский край',
+		'Татарстан',
+		'Удмуртская',
 		'Ульяновская',
 		'Чувашская',
-		'Татарстан',
-		'Башкортостан',
-		'Астраханская',
-		'Волгоградская',
-		'Ростовская',
-		'Адыгея',
-		'Дагестан',
-		'Кабардино Балкарская',
-		'Северная Осетия',
-		'Карачаево Черкесская',
-		'Ставропольский край',
-		'Ингушетия',
-		'Калмыкия',
-		'Краснодарский край',
 	]
 
-	_westRegions = ['Архангельская', 'Вологодская', 'Калининградская', 'Карелия', 'Мурманская', 'Новгородская', 'Псковская', 'Коми', 'Санкт-Петербург', 'Ленинградская']
+	_westRegions = ['Архангельская', 'Вологодская', 'Калининградская', 'Карелия', 'Коми', 'Ленинградская', 'Мурманская', 'Новгородская', 'Псковская', 'Санкт-Петербург']
 
-	northWestCenterMoscowRegions = [
-		'Москва город',
-		'Московская',
+	_northCenterMoscowRegions = [
+		'Архангельская',
 		'Белгородская',
 		'Брянская',
 		'Владимирская',
+		'Вологодская',
 		'Воронежская',
 		'Ивановская',
 		'Калужская',
+		'Калининградская',
+		'Карелия',
+		'Коми',
 		'Костромская',
 		'Курская',
+		'Ленинградская',
 		'Липецкая',
+		'Москва город',
+		'Московская',
+		'Мурманская',
+		'Новгородская',
 		'Орловская',
+		'Псковская',
 		'Рязанская',
+		'Санкт-Петербург',
 		'Смоленская',
 		'Тамбовская',
 		'Тверская',
 		'Тульская',
 		'Ярославская',
-		...this._westRegions,
 	]
 
 	_clusters: clustersType = {
 		[clusterNamesEnum.east]: this._eastRegions,
 		[clusterNamesEnum.west]: this._westRegions,
 		[clusterNamesEnum.north]: this._southRegions,
-		[clusterNamesEnum.northWestCenterMoscow]: this.northWestCenterMoscowRegions,
+		[clusterNamesEnum.northCenterMoscow]: this._northCenterMoscowRegions,
 		[clusterNamesEnum.unknown]: [],
 	}
 
-	getRegionsByCluster = (clusterName: clusterNamesEnum): string[] => this._clusters[clusterName]
+	getRegions = (clusterConfig: clusterConfigType): string[] => {
+		if (clusterConfig.clusterNames.length === 0) return []
+
+		const keys = clusterConfig.isExcept ? Object.values(clusterNamesEnum).filter(i => clusterConfig.clusterNames.includes(i)) : clusterConfig.clusterNames
+		return keys.reduce((p, i) => p.concat(this._clusters[i]), [] as string[])
+	}
 
 	getCluster(regionName: string): clusterNamesEnum {
 		for (const key of Object.values(clusterNamesEnum)) {

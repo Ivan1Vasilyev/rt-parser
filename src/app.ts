@@ -7,10 +7,23 @@ import CardStageInternet from './stages/card/card-stage-internet'
 import CardStageRancho from './stages/card/card-stage-rancho'
 import Logger from './services/logger/log-service'
 import { wayConfig } from './stages/models/way-config'
-import { clusterNamesEnum } from './services/models/cluster'
+import { clusterConfigType, clusterNamesEnum } from './services/models/cluster'
 
-let clusterName: clusterNamesEnum | undefined
-// clusterName = clusterNamesEnum.east
+/*
+east = 'Восток',
+west = 'Запад',
+north = 'Юг',
+northWestCenterMoscow = 'Северо-Запад, Центр, Москва',
+*/
+const clusterNames = [clusterNamesEnum.east]
+
+/*
+isExcept: false => только указанные кластеры
+isExcept: true => всё, кроме указанных кластеров
+*/
+const isExcept = false
+
+const clusterConfig: clusterConfigType = { clusterNames, isExcept }
 
 const mainWayConfig: wayConfig = {
 	path: 'packages/tariffs',
@@ -18,7 +31,7 @@ const mainWayConfig: wayConfig = {
 	cityStageClass: CityStage,
 	cardsStageClass: CardStage,
 	logger: new Logger('main'),
-	clusterName,
+	clusterConfig,
 }
 
 const internetWayConfig: wayConfig = {
@@ -27,7 +40,7 @@ const internetWayConfig: wayConfig = {
 	cityStageClass: CityStageInternet,
 	cardsStageClass: CardStageInternet,
 	logger: new Logger('internet'),
-	clusterName,
+	clusterConfig,
 }
 
 const ranchoWayConfig: wayConfig = {
@@ -36,7 +49,7 @@ const ranchoWayConfig: wayConfig = {
 	cityStageClass: CityStageInternet,
 	cardsStageClass: CardStageRancho,
 	logger: new Logger('rancho'),
-	clusterName,
+	clusterConfig,
 }
 
 new RootStage(mainWayConfig).go()

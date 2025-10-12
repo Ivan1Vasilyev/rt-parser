@@ -5,19 +5,18 @@ import clustersService from '../../services/cluster/cluster-service'
 import { IRegionStage } from '../models/i-region-stage'
 import Logger from '../../services/logger/log-service'
 import { logStateEnum } from '../../services/models/log-state'
-import { clusterNamesEnum } from '../../services/models/cluster'
+import { clusterConfigType, clusterNamesEnum } from '../../services/models/cluster'
 
 export default class RegionStage implements IRegionStage {
 	private _cityStage: ICityStage
-	private _clusters?: string[]
+	private _clusters: string[]
 	private _logger: Logger
 
-	constructor(cityStage: ICityStage, logger: Logger, clusterName?: clusterNamesEnum) {
+	constructor(cityStage: ICityStage, logger: Logger, clusterConfig: clusterConfigType) {
 		this._cityStage = cityStage
 		this._logger = logger
-		if (clusterName) {
-			this._clusters = clustersService.getRegionsByCluster(clusterName)
-		}
+
+		this._clusters = clustersService.getRegions(clusterConfig)
 	}
 
 	go = async (driver: DriverExtention, regionsLength: number, regionNumber: number | undefined, cityNumber: number | undefined) => {
@@ -30,7 +29,7 @@ export default class RegionStage implements IRegionStage {
 				const region = await driver.unsafeFind(selectors.regions, i)
 				const regionName = await region.getText()
 
-				if (this._clusters && !this._clusters.some((r: string) => regionName.includes(r))) continue
+				if (this._clusters.length > 0 && !this._clusters.some((r: string) => regionName.includes(r))) continue
 				this._logger.log('регион: ' + regionName)
 
 				await region.click()
