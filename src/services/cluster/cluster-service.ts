@@ -60,32 +60,22 @@ class ClusterService {
 		'Чувашская',
 	]
 
-	_westRegions = ['Архангельская', 'Вологодская', 'Калининградская', 'Карелия', 'Коми', 'Ленинградская', 'Мурманская', 'Новгородская', 'Псковская', 'Санкт-Петербург']
+	_northRegions = ['Архангельская', 'Вологодская', 'Калининградская', 'Карелия', 'Коми', 'Ленинградская', 'Мурманская', 'Новгородская', 'Псковская', 'Санкт-Петербург']
 
-	_northCenterMoscowRegions = [
-		'Архангельская',
+	_westCenterMoscowRegions = [
 		'Белгородская',
 		'Брянская',
 		'Владимирская',
-		'Вологодская',
 		'Воронежская',
 		'Ивановская',
 		'Калужская',
-		'Калининградская',
-		'Карелия',
-		'Коми',
 		'Костромская',
 		'Курская',
-		'Ленинградская',
 		'Липецкая',
 		'Москва город',
 		'Московская',
-		'Мурманская',
-		'Новгородская',
 		'Орловская',
-		'Псковская',
 		'Рязанская',
-		'Санкт-Петербург',
 		'Смоленская',
 		'Тамбовская',
 		'Тверская',
@@ -95,16 +85,16 @@ class ClusterService {
 
 	_clusters: clustersType = {
 		[clusterNamesEnum.east]: this._eastRegions,
-		[clusterNamesEnum.west]: this._westRegions,
-		[clusterNamesEnum.north]: this._southRegions,
-		[clusterNamesEnum.northCenterMoscow]: this._northCenterMoscowRegions,
+		[clusterNamesEnum.north]: this._northRegions,
+		[clusterNamesEnum.south]: this._southRegions,
+		[clusterNamesEnum.westCenterMoscow]: this._westCenterMoscowRegions,
 		[clusterNamesEnum.unknown]: [],
 	}
 
 	getRegions = (clusterConfig: clusterConfigType): string[] => {
 		if (clusterConfig.clusterNames.length === 0) return []
 
-		const keys = clusterConfig.isExcept ? Object.values(clusterNamesEnum).filter(i => clusterConfig.clusterNames.includes(i)) : clusterConfig.clusterNames
+		const keys = clusterConfig.isExcept ? Object.values(clusterNamesEnum).filter(i => !clusterConfig.clusterNames.includes(i)) : clusterConfig.clusterNames
 		return keys.reduce((p, i) => p.concat(this._clusters[i]), [] as string[])
 	}
 

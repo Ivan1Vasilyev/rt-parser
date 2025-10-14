@@ -141,6 +141,7 @@ export default class CardStage implements ICardStage {
 	go = async (driver: DriverExtention, cardsContainer: WebElement, cityName: string, regionName: string) => {
 		const tariffData = [] as tariffDataType[]
 		const tariffs = await driver.findArray(selectors.tariffs)
+		const cluster = clustersService.getCluster(regionName)
 
 		for (let i = 0; i < tariffs.length; i++) {
 			const currentTariffData = xslxService.getTemplate()
@@ -169,7 +170,7 @@ export default class CardStage implements ICardStage {
 			currentTariffData[tariffDataKeysEnum.minutes] = minutes
 			currentTariffData[tariffDataKeysEnum.SMS] = SMS
 			currentTariffData[tariffDataKeysEnum.region] = regionName
-			currentTariffData[tariffDataKeysEnum.cluster] = clustersService.getCluster(regionName)
+			currentTariffData[tariffDataKeysEnum.cluster] = cluster
 
 			tariffData.push(currentTariffData)
 
@@ -180,6 +181,6 @@ export default class CardStage implements ICardStage {
 			}
 		}
 
-		xslxService.writeFile(tariffData)
+		xslxService.writeTariffsFile(tariffData)
 	}
 }

@@ -4,7 +4,7 @@ import { clusterConfigType } from '../../services/models/cluster'
 import { ICityStage } from './i-city-stage'
 
 export interface IRegionStage {
-	go(driver: DriverExtention, regionsLength: number, regionNumber: number | undefined, cityNumber: number | undefined): Promise<void>
+	go(driver: DriverExtention, regionNumber: number | undefined, cityNumber: number | undefined): Promise<void>
 }
 
 export interface IRegionStageCtor {

@@ -26,14 +26,12 @@ export default class RootStage {
 			await driver.maximize()
 			await driver.sleep(2000)
 			await driver.acceptCookes()
-			await driver.openRegions(this._logger)
-			await driver.waitElementLocated(this._logger, selectors.regions, 'start', async () => await driver.openRegions(this._logger))
 
-			const regionsLength = (await driver.findArray(selectors.regions)).length
-
-			await this._regionStage.go(driver, regionsLength, regionNumber, cityNumber)
+			await this._regionStage.go(driver, regionNumber, cityNumber)
 
 			await driver.quit()
+
+			this._logger.log('Завершено')
 		} catch (err: any) {
 			const fixedRegionNumber = err.regionNumber ?? regionNumber ?? 0
 			const fixedCityNumber = err.cityNumber ?? cityNumber ?? 0

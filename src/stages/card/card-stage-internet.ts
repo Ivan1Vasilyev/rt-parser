@@ -138,6 +138,6 @@ export default class CardStageInternet extends CardStage {
 			tariffData.push(currentTariffData)
 		}
 
-		xslxService.writeFile(tariffData)
+		xslxService.writeTariffsFile(tariffData)
 	}
 }

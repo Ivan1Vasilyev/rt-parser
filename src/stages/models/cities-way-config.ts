@@ -1,14 +1,12 @@
 import Logger from '../../services/logger/log-service'
 import { clusterConfigType } from '../../services/models/cluster'
-import { ICardStageCtor } from './i-card-stage'
 import { ICityStageCtor } from './i-city-stage'
 import { IRegionStageCtor } from './i-region-stage'
 
-export type wayConfig = {
+export type citiesWayConfig = {
 	path: string
 	regionStageClass: IRegionStageCtor
 	cityStageClass: ICityStageCtor
-	cardsStageClass: ICardStageCtor
 	logger: Logger
 	clusterConfig: clusterConfigType
 }

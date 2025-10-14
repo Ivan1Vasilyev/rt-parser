@@ -1,8 +1,8 @@
 export enum clusterNamesEnum {
 	east = 'Восток',
-	west = 'Запад',
-	north = 'Юг',
-	northCenterMoscow = 'Север, Центр, Москва',
+	north = 'Север',
+	south = 'Юг',
+	westCenterMoscow = 'Запад, Центр, Москва',
 	unknown = 'вне известных кластеров',
 }
 

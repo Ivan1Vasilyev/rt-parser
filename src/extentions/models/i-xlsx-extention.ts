@@ -30,8 +30,14 @@ export enum tariffDataKeysEnum {
 }
 
 export type tariffDataType = Record<tariffDataKeysEnum, string | undefined>
+export type citiesDataType = {
+	[tariffDataKeysEnum.region]: string
+	[tariffDataKeysEnum.cityName]: string
+	[tariffDataKeysEnum.cluster]: string
+}
 
 export interface IXlsxExtention {
-	writeFile(tariffData: tariffDataType[]): void
+	writeTariffsFile(tariffData: tariffDataType[]): void
+	writeCitiesFile(citiesData: citiesDataType[]): void
 	getTemplate(): tariffDataType
 }

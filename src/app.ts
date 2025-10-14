@@ -1,21 +1,13 @@
+import { clusterNamesEnum, clusterConfigType } from './services/models/cluster'
 import RootStage from './stages/root/root-stage'
-import CityStage from './stages/city/city-stage'
-import CardStage from './stages/card/card-stage'
-import RegionStage from './stages/region/region-stage'
-import CityStageInternet from './stages/city/city-stage-internet'
-import CardStageInternet from './stages/card/card-stage-internet'
-import CardStageRancho from './stages/card/card-stage-rancho'
-import Logger from './services/logger/log-service'
-import { wayConfig } from './stages/models/way-config'
-import { clusterConfigType, clusterNamesEnum } from './services/models/cluster'
+import { getMainConfig, getInternetConfig, getRanchoConfig, getCitiesOnlyConfig } from './utils/config'
 
-/*
-east = 'Восток',
-west = 'Запад',
-north = 'Юг',
-northWestCenterMoscow = 'Северо-Запад, Центр, Москва',
-*/
-const clusterNames = [clusterNamesEnum.east]
+const east = clusterNamesEnum.east // Восток
+const west = clusterNamesEnum.north // Запад
+const south = clusterNamesEnum.south // Юг
+const northCenterMoscow = clusterNamesEnum.westCenterMoscow //Север, Центр, Москва
+
+const clusterNames = [] as clusterNamesEnum[]
 
 /*
 isExcept: false => только указанные кластеры
@@ -25,33 +17,12 @@ const isExcept = false
 
 const clusterConfig: clusterConfigType = { clusterNames, isExcept }
 
-const mainWayConfig: wayConfig = {
-	path: 'packages/tariffs',
-	regionStageClass: RegionStage,
-	cityStageClass: CityStage,
-	cardsStageClass: CardStage,
-	logger: new Logger('main'),
-	clusterConfig,
-}
-
-const internetWayConfig: wayConfig = {
-	path: 'homeinternet',
-	regionStageClass: RegionStage,
-	cityStageClass: CityStageInternet,
-	cardsStageClass: CardStageInternet,
-	logger: new Logger('internet'),
-	clusterConfig,
-}
-
-const ranchoWayConfig: wayConfig = {
-	path: 'homeinternet/private_house',
-	regionStageClass: RegionStage,
-	cityStageClass: CityStageInternet,
-	cardsStageClass: CardStageRancho,
-	logger: new Logger('rancho'),
-	clusterConfig,
-}
+const mainWayConfig = getMainConfig(clusterConfig)
+const internetWayConfig = getInternetConfig(clusterConfig)
+const ranchoWayConfig = getRanchoConfig(clusterConfig)
+const citiesOnlyConfig = getCitiesOnlyConfig(clusterConfig)
 
 new RootStage(mainWayConfig).go()
 new RootStage(internetWayConfig).go()
 new RootStage(ranchoWayConfig).go()
+// new RootStage(citiesOnlyConfig).go()
