@@ -14,7 +14,7 @@ USAGE
 
 Во время работы:
 
-1. Сбор данных идёт с трёх страниц, path которых указан в wayConfig (utils/config.ts). Для каждой страницы велётся свой .log файл в папке logs.
+1. Сбор данных идёт с трёх страниц, path которых указан в pageConfig (utils/config.ts). Для каждой страницы велётся свой .log файл в папке logs.
 2. Данные заносятся в таблицу в момент появления такого уведомления в логах: `сбор данных в {cityName} завершён...` - сразу все тарифы текущей страницы.
 3. В логах терминала может появиться ошибка, содержащая примерно примерно такой текст `...USB: usb_device_handle_win.cc:1046 Failed to read descriptor from node connection:...`
    или `12848:1004:1129/194313.791:ERROR:ssl_client_socket_impl.cc(975) handshake failed; returned -1, SSL error code 1, net_error -100`, или `[21636:21284:1007/201909.917:ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT`, или типа того.

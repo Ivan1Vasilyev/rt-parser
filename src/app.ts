@@ -1,6 +1,6 @@
 import { clusterNamesEnum, clusterConfigType } from './services/models/cluster'
 import RootStage from './stages/root/root-stage'
-import { getMainConfig, getInternetConfig, getRanchoConfig, getCitiesOnlyConfig } from './utils/config'
+import { getMainConfig, getInternetConfig, getRanchoConfig, getCitiesOnlyConfig } from './utils/page-config'
 
 const east = clusterNamesEnum.east // Восток
 const north = clusterNamesEnum.north // Север

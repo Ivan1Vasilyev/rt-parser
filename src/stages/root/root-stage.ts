@@ -1,19 +1,18 @@
 import DriverExtention from '../../extentions/driver/driver-extention'
 import Logger from '../../services/logger/log-service'
 import { logStateEnum } from '../../services/models/log-state'
-import selectors from '../../utils/selectors'
+import { pageConfig } from '../../utils/page-config'
 import { IRegionStage } from '../models/i-region-stage'
-import { wayConfig } from '../models/way-config'
 
 export default class RootStage {
 	private _path: string
 	private _regionStage: IRegionStage
 	private _logger: Logger
 
-	constructor({ path, regionStageClass, cityStageClass, cardsStageClass, clusterConfig, logger }: wayConfig) {
+	constructor({ path, regionStageClass, cityStageClass, cardStageClass, clusterConfig, logger }: pageConfig) {
 		this._path = path
 		this._logger = logger
-		const cardStage = new cardsStageClass()
+		const cardStage = new cardStageClass()
 		const cityStage = new cityStageClass(cardStage, logger)
 		this._regionStage = new regionStageClass(cityStage, logger, clusterConfig)
 	}
