@@ -10,7 +10,7 @@ export default class CardStageInternet extends CardStage {
 	protected _priceSelector: string = '.rt-price-v3__val'
 	protected _tariffNameSelector: string = '.landing-offer__name'
 
-	protected override _parsePriceAndDiscountInfo = async (driver: DriverExtention, button: WebElement): Promise<string[]> => {
+	protected override _parsePriceAndDiscountInfo = async (driver: DriverExtention, button: WebElement) => {
 		const priceInfoElem = await driver.findArray('.landing-form-card__desc', button)
 		if (priceInfoElem.length) {
 			const priceInfo = await priceInfoElem[0].getText()
@@ -18,15 +18,15 @@ export default class CardStageInternet extends CardStage {
 			if (matches) {
 				const resultPriceInfo = `${matches[2] || ''} ${matches[3] || ''} со скидкой ${matches[1] || ''}`
 				const discountDuration = /месяц/i.test(priceInfo) ? matches[3] : ''
-				return [discountDuration, resultPriceInfo, '1']
+				return { discountDuration, priceInfo: resultPriceInfo, discountMark: '1' }
 			}
-			return ['', priceInfo, '']
+			return { discountDuration: '', priceInfo, discountMark: '' }
 		}
 
-		return ['', '', '']
+		return { discountDuration: '', priceInfo: '', discountMark: '' }
 	}
 
-	protected override _parseTariffInfo = async (driver: DriverExtention, container: WebElement): Promise<string[]> => {
+	protected override _parseTariffInfo = async (driver: DriverExtention, container: WebElement) => {
 		let tariffInfo = ''
 
 		const addText = (info: string) => {
@@ -51,10 +51,10 @@ export default class CardStageInternet extends CardStage {
 			addText(videoText)
 		}
 
-		return [tariffInfo.trim()]
+		return { tariffInfo: tariffInfo.trim(), routerForRent: '', TVBoxForRent: '', TVBoxToBuy: '' }
 	}
 
-	protected override _parseOffers = async (driver: DriverExtention, card: WebElement): Promise<string[]> => {
+	protected override _parseOffers = async (driver: DriverExtention, card: WebElement) => {
 		let speed = '',
 			tariffInfo = ''
 		const offers = await driver.findArray('.landing-offer__product', card)
@@ -74,7 +74,7 @@ export default class CardStageInternet extends CardStage {
 			}
 		}
 
-		return [speed, tariffInfo]
+		return { speed, interactiveTV: tariffInfo, GB: '', minutes: '', SMS: '' }
 	}
 
 	protected _setStep = (counter: number, maxValue: number): boolean => counter > 0 && counter < maxValue
@@ -83,7 +83,7 @@ export default class CardStageInternet extends CardStage {
 		const tariffData = [] as tariffDataType[]
 
 		const buttons = await driver.findArray('.landing-form-card', cardsContainer)
-		const cluster = clustersService.getCluster(regionName)
+		const cluster = clustersService.getClusterName(regionName)
 		if (buttons.length) {
 			for (let i = 0; i < buttons.length; i++) {
 				if (this._setStep(i, buttons.length - 1)) continue
@@ -92,10 +92,10 @@ export default class CardStageInternet extends CardStage {
 				await buttons[i].click()
 				await driver.sleep(2000)
 
-				const [priceWithDiscount, price] = await this._parsePrices(driver, buttons[i])
-				const [tariffInfo] = await this._parseTariffInfo(driver, cardsContainer)
-				const [discountDuration, priceInfo, discountMark] = await this._parsePriceAndDiscountInfo(driver, buttons[i])
-				const [speed, tariffInfoAdd] = await this._parseOffers(driver, cardsContainer)
+				const { promoPrice, price } = await this._parsePrices(driver, buttons[i])
+				const { tariffInfo } = await this._parseTariffInfo(driver, cardsContainer)
+				const { discountDuration, priceInfo, discountMark } = await this._parsePriceAndDiscountInfo(driver, buttons[i])
+				const { speed, interactiveTV: tariffInfoAdd } = await this._parseOffers(driver, cardsContainer)
 
 				const tariffName = await this._getTariffName(driver, cardsContainer)
 
@@ -103,7 +103,7 @@ export default class CardStageInternet extends CardStage {
 
 				currentTariffData[tariffDataKeysEnum.cityName] = cityName
 				currentTariffData[tariffDataKeysEnum.tariffName] = tariffName
-				currentTariffData[tariffDataKeysEnum.priceWithDiscount] = priceWithDiscount
+				currentTariffData[tariffDataKeysEnum.promoPrice] = promoPrice
 				currentTariffData[tariffDataKeysEnum.price] = price
 				currentTariffData[tariffDataKeysEnum.discountDuration] = discountDuration
 				currentTariffData[tariffDataKeysEnum.priceInfo] = priceInfo
@@ -119,17 +119,17 @@ export default class CardStageInternet extends CardStage {
 		} else {
 			const currentTariffData = xslxService.getTemplate()
 
-			const [priceWithDiscount, price] = await this._parsePrices(driver, cardsContainer)
-			const [tariffInfo] = await this._parseTariffInfo(driver, cardsContainer)
+			const { promoPrice, price } = await this._parsePrices(driver, cardsContainer)
+			const { tariffInfo } = await this._parseTariffInfo(driver, cardsContainer)
 
-			const [speed, tariffInfoAdd] = await this._parseOffers(driver, cardsContainer)
+			const { speed, interactiveTV: tariffInfoAdd } = await this._parseOffers(driver, cardsContainer)
 			const tariffName = await this._getTariffName(driver, cardsContainer)
 
 			if (!tariffName.trim()) throw 'нет навания тарифа'
 
 			currentTariffData[tariffDataKeysEnum.cityName] = cityName
 			currentTariffData[tariffDataKeysEnum.tariffName] = tariffName
-			currentTariffData[tariffDataKeysEnum.priceWithDiscount] = priceWithDiscount
+			currentTariffData[tariffDataKeysEnum.promoPrice] = promoPrice
 			currentTariffData[tariffDataKeysEnum.price] = price
 			currentTariffData[tariffDataKeysEnum.tariffInfo] = tariffInfo + tariffInfoAdd
 			currentTariffData[tariffDataKeysEnum.speed] = speed

@@ -1,7 +1,7 @@
 export enum tariffDataKeysEnum {
 	cityName = 'Город',
 	tariffName = 'Название тарифа',
-	priceWithDiscount = 'Цена со скидкой',
+	promoPrice = 'Цена со скидкой',
 	price = 'Цена',
 	discountDuration = 'Длительность скидки в мес',
 	priceInfo = 'Доп. информация по цене',

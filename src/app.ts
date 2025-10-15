@@ -3,15 +3,15 @@ import RootStage from './stages/root/root-stage'
 import { getMainConfig, getInternetConfig, getRanchoConfig, getCitiesOnlyConfig } from './utils/config'
 
 const east = clusterNamesEnum.east // Восток
-const west = clusterNamesEnum.north // Запад
+const north = clusterNamesEnum.north // Север
 const south = clusterNamesEnum.south // Юг
-const northCenterMoscow = clusterNamesEnum.westCenterMoscow //Север, Центр, Москва
+const westCenterMoscow = clusterNamesEnum.westCenterMoscow // Запад, Центр, Москва
 
 const clusterNames = [] as clusterNamesEnum[]
 
 /*
-isExcept: false => только указанные кластеры
-isExcept: true => всё, кроме указанных кластеров
+isExcept = false --> только указанные кластеры
+isExcept = true --> всё, кроме указанных кластеров
 */
 const isExcept = false
 

@@ -6,6 +6,22 @@ import clustersService from '../../services/cluster/cluster-service'
 import xslxService from '../../extentions/xlsx/xlsx-extention'
 import { tariffDataKeysEnum, tariffDataType } from '../../extentions/models/i-xlsx-extention'
 
+type tariffInfoType = {
+	tariffInfo: string
+	routerForRent: string
+	TVBoxForRent: string
+	TVBoxToBuy: string
+}
+
+type pricesType = {
+	promoPrice: string
+	price: string
+}
+
+type priceInfoType = { discountDuration: string; priceInfo: string; discountMark: string }
+
+type offersType = { speed: string; interactiveTV: string; GB: string; minutes: string; SMS: string }
+
 export default class CardStage implements ICardStage {
 	protected _oldPriceSelector: string = selectors.oldPriceValue
 	protected _priceSelector: string = selectors.priceValue
@@ -20,13 +36,14 @@ export default class CardStage implements ICardStage {
 		return ''
 	}
 
-	protected _parsePrices = async (driver: DriverExtention, card: WebElement): Promise<string[]> => {
+	protected _parsePrices = async (driver: DriverExtention, card: WebElement): Promise<pricesType> => {
 		const oldPriceValue = (await driver.getText(card, this._oldPriceSelector))?.replace(/\s/g, '')
 		const priceValue = (await driver.getText(card, this._priceSelector))?.replace(/\s/g, '')
-		return oldPriceValue && priceValue !== '' ? [priceValue, oldPriceValue] : ['', oldPriceValue || priceValue]
+
+		return oldPriceValue && priceValue !== '' ? { promoPrice: priceValue, price: oldPriceValue } : { promoPrice: '', price: oldPriceValue || priceValue }
 	}
 
-	protected _parseTariffInfo = async (driver: DriverExtention, card: WebElement): Promise<string[]> => {
+	protected _parseTariffInfo = async (driver: DriverExtention, card: WebElement): Promise<tariffInfoType> => {
 		let tariffInfo = ''
 		let routerForRent = ''
 		let TVBoxForRent = ''
@@ -59,7 +76,7 @@ export default class CardStage implements ICardStage {
 
 		const isInfoExists = await driver.findArray(selectors.info, card)
 		if (!isInfoExists.length) {
-			return [tariffInfo.trim(), routerForRent, TVBoxForRent]
+			return { tariffInfo: tariffInfo.trim(), routerForRent, TVBoxForRent, TVBoxToBuy }
 		}
 
 		await iterateInInfo()
@@ -82,10 +99,10 @@ export default class CardStage implements ICardStage {
 			}
 		}
 
-		return [tariffInfo.trim(), routerForRent, TVBoxForRent, TVBoxToBuy]
+		return { tariffInfo: tariffInfo.trim(), routerForRent, TVBoxForRent, TVBoxToBuy }
 	}
 
-	protected _parsePriceAndDiscountInfo = async (driver: DriverExtention, card: WebElement, tariffInfo: string): Promise<string[]> => {
+	protected _parsePriceAndDiscountInfo = async (driver: DriverExtention, card: WebElement, tariffInfo: string): Promise<priceInfoType> => {
 		const discountMark = (await driver.findArray(selectors.discountMarkText, card))[0]
 		if (discountMark) {
 			const discountMarkText = await discountMark.getText()
@@ -101,13 +118,18 @@ export default class CardStage implements ICardStage {
 				}
 			}
 
-			return [discountDuration, priceInfo.trim(), '1']
+			return { discountDuration, priceInfo: priceInfo.trim(), discountMark: '1' }
 		}
-		return ['', '', '']
+
+		return { discountDuration: '', priceInfo: '', discountMark: '' }
 	}
 
-	protected _parseOffers = async (driver: DriverExtention, card: WebElement): Promise<string[]> => {
-		let speed, interactiveTV, GB, minutes, SMS
+	protected _parseOffers = async (driver: DriverExtention, card: WebElement): Promise<offersType> => {
+		let speed = '',
+			interactiveTV = '',
+			GB = '',
+			minutes = '',
+			SMS = ''
 		const offers = await driver.findArray(selectors.offers, card)
 
 		for (const offer of offers) {
@@ -124,14 +146,12 @@ export default class CardStage implements ICardStage {
 				continue
 			}
 			if (/Мобильная связь/i.test(offerName)) {
-				if (/не включено/i.test(offerText)) {
-					;[GB, minutes, SMS] = ['', '', '']
-				} else {
-					;[GB, minutes, SMS] = offerText.match(/\d+/g) ?? []
+				if (!/не включено/i.test(offerText)) {
+					;[GB = '', minutes = '', SMS = ''] = offerText.match(/\d+/g) ?? []
 				}
 			}
 		}
-		return [speed || '', interactiveTV || '', GB || '', minutes || '', SMS || '']
+		return { speed, interactiveTV, GB, minutes, SMS }
 	}
 
 	protected _getTariffName = async (driver: DriverExtention, webElement: WebElement): Promise<string> => {
@@ -141,21 +161,21 @@ export default class CardStage implements ICardStage {
 	go = async (driver: DriverExtention, cardsContainer: WebElement, cityName: string, regionName: string) => {
 		const tariffData = [] as tariffDataType[]
 		const tariffs = await driver.findArray(selectors.tariffs)
-		const cluster = clustersService.getCluster(regionName)
+		const cluster = clustersService.getClusterName(regionName)
 
 		for (let i = 0; i < tariffs.length; i++) {
 			const currentTariffData = xslxService.getTemplate()
-			const [priceWithDiscount, price] = await this._parsePrices(driver, tariffs[i])
-			const [tariffInfo, routerForRent, TVBoxForRent, TVBoxToBuy] = await this._parseTariffInfo(driver, tariffs[i])
-			const [discountDuration, priceInfo, discountMark] = await this._parsePriceAndDiscountInfo(driver, tariffs[i], tariffInfo)
-			const [speed, interactiveTV, GB, minutes, SMS] = await this._parseOffers(driver, tariffs[i])
+			const { promoPrice, price } = await this._parsePrices(driver, tariffs[i])
+			const { tariffInfo, routerForRent, TVBoxForRent, TVBoxToBuy } = await this._parseTariffInfo(driver, tariffs[i])
+			const { discountDuration, priceInfo, discountMark } = await this._parsePriceAndDiscountInfo(driver, tariffs[i], tariffInfo)
+			const { speed, interactiveTV, GB, minutes, SMS } = await this._parseOffers(driver, tariffs[i])
 			const tariffName = await this._getTariffName(driver, tariffs[i])
 
 			if (!tariffName.trim()) throw 'нет навания тарифа'
 
 			currentTariffData[tariffDataKeysEnum.cityName] = cityName
 			currentTariffData[tariffDataKeysEnum.tariffName] = tariffName
-			currentTariffData[tariffDataKeysEnum.priceWithDiscount] = priceWithDiscount
+			currentTariffData[tariffDataKeysEnum.promoPrice] = promoPrice
 			currentTariffData[tariffDataKeysEnum.price] = price
 			currentTariffData[tariffDataKeysEnum.discountDuration] = discountDuration
 			currentTariffData[tariffDataKeysEnum.priceInfo] = priceInfo

@@ -98,7 +98,7 @@ class ClusterService {
 		return keys.reduce((p, i) => p.concat(this._clusters[i]), [] as string[])
 	}
 
-	getCluster(regionName: string): clusterNamesEnum {
+	getClusterName(regionName: string): clusterNamesEnum {
 		for (const key of Object.values(clusterNamesEnum)) {
 			if (this._clusters[key].some((r: string) => regionName.includes(r))) {
 				return key

@@ -5,27 +5,28 @@ import clustersService from '../../services/cluster/cluster-service'
 import { IRegionStage } from '../models/i-region-stage'
 import Logger from '../../services/logger/log-service'
 import { logStateEnum } from '../../services/models/log-state'
-import { clusterConfigType, clusterNamesEnum } from '../../services/models/cluster'
+import { clusterConfigType } from '../../services/models/cluster'
 
 export default class RegionStage implements IRegionStage {
 	private _cityStage: ICityStage
-	private _clusters: string[]
+	private _filteredRegions: string[]
 	private _logger: Logger
 
 	constructor(cityStage: ICityStage, logger: Logger, clusterConfig: clusterConfigType) {
 		this._cityStage = cityStage
 		this._logger = logger
 
-		this._clusters = clustersService.getRegions(clusterConfig)
+		this._filteredRegions = clustersService.getRegions(clusterConfig)
 	}
 
 	go = async (driver: DriverExtention, regionNumber: number | undefined, cityNumber: number | undefined) => {
 		await driver.openRegions(this._logger)
 
 		const regionsLength = (await driver.findArray(selectors.regions)).length
-		const isCluster = Boolean(this._clusters.length)
-		let regionByClusterCounter = isCluster ? 0 : null
-		const regionCounter = isCluster ? this._clusters.length : regionsLength
+
+		const isCluster = Boolean(this._filteredRegions.length)
+		let filteredRegionCounter = isCluster ? 0 : null
+		const filteredRegionsLength = isCluster ? this._filteredRegions.length : regionsLength
 
 		for (let i = 0; i < regionsLength; i++) {
 			if (regionNumber && regionNumber > i) i = regionNumber
@@ -36,10 +37,10 @@ export default class RegionStage implements IRegionStage {
 				const region = await driver.unsafeFind(selectors.regions, i)
 				const regionName = await region.getText()
 
-				if (this._clusters.length > 0 && !this._clusters.some((r: string) => regionName.includes(r))) continue
+				if (this._filteredRegions.length > 0 && !this._filteredRegions.some((r: string) => regionName.includes(r))) continue
 				this._logger.log('регион: ' + regionName)
 
-				if (regionByClusterCounter !== null) regionByClusterCounter++
+				if (filteredRegionCounter !== null) filteredRegionCounter++
 
 				await region.click()
 				await driver.sleep(3000)
@@ -63,7 +64,7 @@ export default class RegionStage implements IRegionStage {
 
 				await this._cityStage.go(driver, citiesLength, regionName, i, regionNumber, cityNumber)
 
-				this._logger.log(`сбор данных по региону ${regionName} завершён. ${regionByClusterCounter ?? i + 1} из ${regionCounter}`)
+				this._logger.log(`сбор данных по региону ${regionName} завершён. ${filteredRegionCounter ?? i + 1} из ${filteredRegionsLength}`)
 			} catch (err: any) {
 				throw { error: err.error || err, regionNumber: i, cityNumber: err.cityNumber || cityNumber }
 			}
