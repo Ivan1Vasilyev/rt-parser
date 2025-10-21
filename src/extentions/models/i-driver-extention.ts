@@ -1,12 +1,12 @@
 import { WebElement } from 'selenium-webdriver'
 import Logger from '../../services/logger/log-service'
 
-const asyncMethodNames = ['get', 'maximize', 'sleep', 'findElements', 'findElement', 'wait', 'quit', 'refresh', 'scroll'] as const
+const delegatedMethodNames = ['get', 'maximize', 'sleep', 'findElements', 'findElement', 'wait', 'quit', 'refresh', 'scroll'] as const
 type PromiseMethods<T extends readonly string[]> = {
 	[K in T[number]]: (...args: any[]) => Promise<any>
 }
 
-type driverExtentionAsyncMethods = PromiseMethods<typeof asyncMethodNames>
+type driverExtentionAsyncMethods = PromiseMethods<typeof delegatedMethodNames>
 
 export interface IDriverExtention extends driverExtentionAsyncMethods {
 	findArray(selector: string, webElement?: WebElement): Promise<WebElement[]>

@@ -108,7 +108,6 @@ export default class CardStageInternet extends CardStage {
 				currentTariffData[tariffDataKeysEnum.discountDuration] = discountDuration
 				currentTariffData[tariffDataKeysEnum.priceInfo] = priceInfo
 				currentTariffData[tariffDataKeysEnum.discountMark] = discountMark
-				currentTariffData[tariffDataKeysEnum.discountMark] = priceInfo ? '1' : ''
 				currentTariffData[tariffDataKeysEnum.tariffInfo] = tariffInfo + tariffInfoAdd
 				currentTariffData[tariffDataKeysEnum.speed] = speed
 				currentTariffData[tariffDataKeysEnum.region] = regionName

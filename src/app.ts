@@ -7,7 +7,7 @@ const north = clusterNamesEnum.north // Север
 const south = clusterNamesEnum.south // Юг
 const westCenterMoscow = clusterNamesEnum.westCenterMoscow // Запад, Центр, Москва
 
-const clusterNames = [] as clusterNamesEnum[]
+const clusterNames = [] as clusterNamesEnum[] // пустой - парсится всё.
 
 /*
 isExcept = false --> только указанные кластеры
