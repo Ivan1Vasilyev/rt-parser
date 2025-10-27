@@ -20,7 +20,7 @@ export type pageConfig = {
 	clustes: clusterNamesEnum[]
 }
 
-// clusterConfig формируем в app.ts, просто потому что он 1 на всех и там удобнее
+// clusters формируем в app.ts, просто потому что он 1 на всех и там удобнее
 
 export const getMainConfig = (clustes: clusterNamesEnum[]): pageConfig => ({
 	path: 'packages/tariffs',
