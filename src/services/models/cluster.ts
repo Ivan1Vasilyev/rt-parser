@@ -6,9 +6,4 @@ export enum clusterNamesEnum {
 	unknown = 'вне известных кластеров',
 }
 
-export type clusterConfigType = {
-	clusterNames: clusterNamesEnum[]
-	isExcept: boolean
-}
-
 export type clustersType = Record<clusterNamesEnum, string[]>

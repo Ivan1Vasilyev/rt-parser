@@ -5,18 +5,18 @@ import clustersService from '../../services/cluster/cluster-service'
 import { IRegionStage } from '../models/i-region-stage'
 import Logger from '../../services/logger/log-service'
 import { logStateEnum } from '../../services/models/log-state'
-import { clusterConfigType } from '../../services/models/cluster'
+import { clusterNamesEnum } from '../../services/models/cluster'
 
 export default class RegionStage implements IRegionStage {
 	private _cityStage: ICityStage
 	private _filteredRegions: string[]
 	private _logger: Logger
 
-	constructor(cityStage: ICityStage, logger: Logger, clusterConfig: clusterConfigType) {
+	constructor(cityStage: ICityStage, logger: Logger, clustes: clusterNamesEnum[]) {
 		this._cityStage = cityStage
 		this._logger = logger
 
-		this._filteredRegions = clustersService.getRegions(clusterConfig)
+		this._filteredRegions = clustersService.getRegions(clustes)
 	}
 
 	go = async (driver: DriverExtention, regionNumber: number | undefined, cityNumber: number | undefined) => {

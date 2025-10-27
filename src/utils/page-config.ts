@@ -1,5 +1,5 @@
 import Logger from '../services/logger/log-service'
-import { clusterConfigType } from '../services/models/cluster'
+import { clusterNamesEnum } from '../services/models/cluster'
 import CardStage from '../stages/card/card-stage'
 import CardStageInternet from '../stages/card/card-stage-internet'
 import CardStageRancho from '../stages/card/card-stage-rancho'
@@ -17,43 +17,43 @@ export type pageConfig = {
 	cityStageClass: ICityStageCtor
 	cardStageClass: ICardStageCtor
 	logger: Logger
-	clusterConfig: clusterConfigType
+	clustes: clusterNamesEnum[]
 }
 
 // clusterConfig формируем в app.ts, просто потому что он 1 на всех и там удобнее
 
-export const getMainConfig = (clusterConfig: clusterConfigType): pageConfig => ({
+export const getMainConfig = (clustes: clusterNamesEnum[]): pageConfig => ({
 	path: 'packages/tariffs',
 	regionStageClass: RegionStage,
 	cityStageClass: CityStage,
 	cardStageClass: CardStage,
 	logger: new Logger('main'),
-	clusterConfig,
+	clustes,
 })
 
-export const getInternetConfig = (clusterConfig: clusterConfigType): pageConfig => ({
+export const getInternetConfig = (clustes: clusterNamesEnum[]): pageConfig => ({
 	path: 'homeinternet',
 	regionStageClass: RegionStage,
 	cityStageClass: CityStageInternet,
 	cardStageClass: CardStageInternet,
 	logger: new Logger('internet'),
-	clusterConfig,
+	clustes,
 })
 
-export const getRanchoConfig = (clusterConfig: clusterConfigType): pageConfig => ({
+export const getRanchoConfig = (clustes: clusterNamesEnum[]): pageConfig => ({
 	path: 'homeinternet/private_house',
 	regionStageClass: RegionStage,
 	cityStageClass: CityStageInternet,
 	cardStageClass: CardStageRancho,
 	logger: new Logger('rancho'),
-	clusterConfig,
+	clustes,
 })
 
-export const getCitiesOnlyConfig = (clusterConfig: clusterConfigType): pageConfig => ({
+export const getCitiesOnlyConfig = (clustes: clusterNamesEnum[]): pageConfig => ({
 	path: '',
 	regionStageClass: RegionStage,
 	cityStageClass: CityStageCities,
 	cardStageClass: CardStage,
 	logger: new Logger('cities'),
-	clusterConfig,
+	clustes,
 })

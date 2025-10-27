@@ -1,4 +1,4 @@
-import { clustersType, clusterNamesEnum, clusterConfigType } from '../models/cluster'
+import { clustersType, clusterNamesEnum } from '../models/cluster'
 
 class ClusterService {
 	_eastRegions = [
@@ -91,12 +91,8 @@ class ClusterService {
 		[clusterNamesEnum.unknown]: [],
 	}
 
-	getRegions = (clusterConfig: clusterConfigType): string[] => {
-		if (clusterConfig.clusterNames.length === 0) return []
-
-		const keys = clusterConfig.isExcept ? Object.values(clusterNamesEnum).filter(i => !clusterConfig.clusterNames.includes(i)) : clusterConfig.clusterNames
-		return keys.reduce((p, i) => p.concat(this._clusters[i]), [] as string[])
-	}
+	getRegions = (clusterNames: clusterNamesEnum[]): string[] =>
+		clusterNames.length === 0 ? [] : clusterNames.reduce((p, i) => p.concat(this._clusters[i]), [] as string[])
 
 	getClusterName(regionName: string): clusterNamesEnum {
 		for (const key of Object.values(clusterNamesEnum)) {

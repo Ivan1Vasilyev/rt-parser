@@ -1,4 +1,4 @@
-import { clusterNamesEnum, clusterConfigType } from './services/models/cluster'
+import { clusterNamesEnum } from './services/models/cluster'
 import RootStage from './stages/root/root-stage'
 import { getMainConfig, getInternetConfig, getRanchoConfig, getCitiesOnlyConfig } from './utils/page-config'
 
@@ -7,20 +7,12 @@ const north = clusterNamesEnum.north // Север
 const south = clusterNamesEnum.south // Юг
 const westCenterMoscow = clusterNamesEnum.westCenterMoscow // Запад, Центр, Москва
 
-const clusterNames = [] as clusterNamesEnum[] // пустой - парсится всё.
+const clusters = [] as clusterNamesEnum[] // пустой - парсится всё.
 
-/*
-isExcept = false --> только указанные кластеры
-isExcept = true --> всё, кроме указанных кластеров
-*/
-const isExcept = false
-
-const clusterConfig: clusterConfigType = { clusterNames, isExcept }
-
-const mainWayConfig = getMainConfig(clusterConfig)
-const internetWayConfig = getInternetConfig(clusterConfig)
-const ranchoWayConfig = getRanchoConfig(clusterConfig)
-const citiesOnlyConfig = getCitiesOnlyConfig(clusterConfig)
+const mainWayConfig = getMainConfig(clusters)
+const internetWayConfig = getInternetConfig(clusters)
+const ranchoWayConfig = getRanchoConfig(clusters)
+const citiesOnlyConfig = getCitiesOnlyConfig(clusters)
 
 new RootStage(mainWayConfig).go()
 new RootStage(internetWayConfig).go()

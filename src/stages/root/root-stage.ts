@@ -9,12 +9,12 @@ export default class RootStage {
 	private _regionStage: IRegionStage
 	private _logger: Logger
 
-	constructor({ path, regionStageClass, cityStageClass, cardStageClass, clusterConfig, logger }: pageConfig) {
+	constructor({ path, regionStageClass, cityStageClass, cardStageClass, clustes, logger }: pageConfig) {
 		this._path = path
 		this._logger = logger
 		const cardStage = new cardStageClass()
 		const cityStage = new cityStageClass(cardStage, logger)
-		this._regionStage = new regionStageClass(cityStage, logger, clusterConfig)
+		this._regionStage = new regionStageClass(cityStage, logger, clustes)
 	}
 
 	go = async (regionNumber?: number | undefined, cityNumber?: number | undefined) => {
