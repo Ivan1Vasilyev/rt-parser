@@ -20,18 +20,6 @@ export default class Logger {
 		if (!fs.existsSync(this._logsDir)) {
 			fs.mkdirSync(this._logsDir, { recursive: true })
 		}
-
-		this.clearLog()
-	}
-
-	clearLog() {
-		try {
-			this._logs = ''
-			fs.writeFileSync(this._logFilePath, '')
-			console.log(`Лог-файл ${this._logFileName} очищен`)
-		} catch (err) {
-			console.error('Ошибка очистки лог-файла:', err)
-		}
 	}
 
 	log(message: string, state: logStateEnum = logStateEnum.default) {
