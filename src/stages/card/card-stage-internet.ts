@@ -2,7 +2,7 @@ import { WebElement } from 'selenium-webdriver'
 import DriverExtention from '../../extentions/driver/driver-extention'
 import CardStage from './card-stage'
 import clustersService from '../../services/cluster/cluster-service'
-import xslxService from '../../extentions/xlsx/xlsx-extention'
+import xlsxService from '../../extentions/xlsx/xlsx-extention'
 import { tariffDataKeysEnum, tariffDataType } from '../../extentions/models/i-xlsx-extention'
 
 export default class CardStageInternet extends CardStage {
@@ -87,7 +87,7 @@ export default class CardStageInternet extends CardStage {
 		if (buttons.length) {
 			for (let i = 0; i < buttons.length; i++) {
 				if (this._setStep(i, buttons.length - 1)) continue
-				const currentTariffData = xslxService.getTemplate()
+				const currentTariffData = xlsxService.getTemplate()
 
 				await buttons[i].click()
 				await driver.sleep(2000)
@@ -116,7 +116,7 @@ export default class CardStageInternet extends CardStage {
 				tariffData.push(currentTariffData)
 			}
 		} else {
-			const currentTariffData = xslxService.getTemplate()
+			const currentTariffData = xlsxService.getTemplate()
 
 			const { promoPrice, price } = await this._parsePrices(driver, cardsContainer)
 			const { tariffInfo } = await this._parseTariffInfo(driver, cardsContainer)
@@ -137,6 +137,6 @@ export default class CardStageInternet extends CardStage {
 			tariffData.push(currentTariffData)
 		}
 
-		xslxService.writeTariffsFile(tariffData)
+		xlsxService.writeTariffsFile(tariffData)
 	}
 }

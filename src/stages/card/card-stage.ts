@@ -3,7 +3,7 @@ import DriverExtention from '../../extentions/driver/driver-extention'
 import { ICardStage } from '../models/i-card-stage'
 import selectors from '../../utils/selectors'
 import clustersService from '../../services/cluster/cluster-service'
-import xslxService from '../../extentions/xlsx/xlsx-extention'
+import xlsxService from '../../extentions/xlsx/xlsx-extention'
 import { tariffDataKeysEnum, tariffDataType } from '../../extentions/models/i-xlsx-extention'
 
 type tariffInfoType = {
@@ -164,7 +164,7 @@ export default class CardStage implements ICardStage {
 		const cluster = clustersService.getClusterName(regionName)
 
 		for (let i = 0; i < tariffs.length; i++) {
-			const currentTariffData = xslxService.getTemplate()
+			const currentTariffData = xlsxService.getTemplate()
 			const { promoPrice, price } = await this._parsePrices(driver, tariffs[i])
 			const { tariffInfo, routerForRent, TVBoxForRent, TVBoxToBuy } = await this._parseTariffInfo(driver, tariffs[i])
 			const { discountDuration, priceInfo, discountMark } = await this._parsePriceAndDiscountInfo(driver, tariffs[i], tariffInfo)
@@ -201,6 +201,6 @@ export default class CardStage implements ICardStage {
 			}
 		}
 
-		xslxService.writeTariffsFile(tariffData)
+		xlsxService.writeTariffsFile(tariffData)
 	}
 }

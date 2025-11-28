@@ -61,5 +61,5 @@ class XlsxExtention<T> implements IXlsxExtention {
 	}
 }
 
-const xslxService = new XlsxExtention<tariffDataType>('РТ тарифы')
-export default xslxService
+const xlsxService = new XlsxExtention<tariffDataType>('РТ тарифы')
+export default xlsxService

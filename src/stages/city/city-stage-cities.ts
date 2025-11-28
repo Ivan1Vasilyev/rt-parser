@@ -2,7 +2,7 @@ import DriverExtention from '../../extentions/driver/driver-extention'
 import selectors from '../../utils/selectors'
 import { ICityStage } from '../models/i-city-stage'
 import { citiesDataType, tariffDataKeysEnum } from '../../extentions/models/i-xlsx-extention'
-import xslxService from '../../extentions/xlsx/xlsx-extention'
+import xlsxService from '../../extentions/xlsx/xlsx-extention'
 import clustersService from '../../services/cluster/cluster-service'
 
 export default class CityStageCities implements ICityStage {
@@ -18,7 +18,7 @@ export default class CityStageCities implements ICityStage {
 		const cluster = clustersService.getClusterName(regionName)
 
 		for (let i = 0; i < citiesLength; i++) {
-			const citiesDataTemplate = xslxService.getCitiesTemplte()
+			const citiesDataTemplate = xlsxService.getCitiesTemplte()
 
 			try {
 				if (cityNumber && regionNumber === currentRegionIndex && cityNumber > i) i = cityNumber
@@ -36,6 +36,6 @@ export default class CityStageCities implements ICityStage {
 			}
 		}
 
-		xslxService.writeCitiesFile(citiesData)
+		xlsxService.writeCitiesFile(citiesData)
 	}
 }

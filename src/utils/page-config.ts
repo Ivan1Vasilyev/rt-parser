@@ -16,44 +16,39 @@ export type pageConfig = {
 	regionStageClass: IRegionStageCtor
 	cityStageClass: ICityStageCtor
 	cardStageClass: ICardStageCtor
-	logger: Logger
-	clustes: clusterNamesEnum[]
+	clusters: clusterNamesEnum[]
 }
 
 // clusters формируем в app.ts, просто потому что он 1 на всех и там удобнее
 
-export const getMainConfig = (clustes: clusterNamesEnum[]): pageConfig => ({
+export const getMainConfig = (clusters: clusterNamesEnum[]): pageConfig => ({
 	path: 'packages/tariffs',
 	regionStageClass: RegionStage,
 	cityStageClass: CityStage,
 	cardStageClass: CardStage,
-	logger: new Logger('main'),
-	clustes,
+	clusters,
 })
 
-export const getInternetConfig = (clustes: clusterNamesEnum[]): pageConfig => ({
+export const getInternetConfig = (clusters: clusterNamesEnum[]): pageConfig => ({
 	path: 'homeinternet',
 	regionStageClass: RegionStage,
 	cityStageClass: CityStageInternet,
 	cardStageClass: CardStageInternet,
-	logger: new Logger('internet'),
-	clustes,
+	clusters,
 })
 
-export const getRanchoConfig = (clustes: clusterNamesEnum[]): pageConfig => ({
+export const getRanchoConfig = (clusters: clusterNamesEnum[]): pageConfig => ({
 	path: 'homeinternet/private_house',
 	regionStageClass: RegionStage,
 	cityStageClass: CityStageInternet,
 	cardStageClass: CardStageRancho,
-	logger: new Logger('rancho'),
-	clustes,
+	clusters,
 })
 
-export const getCitiesOnlyConfig = (clustes: clusterNamesEnum[]): pageConfig => ({
+export const getCitiesOnlyConfig = (clusters: clusterNamesEnum[]): pageConfig => ({
 	path: '',
 	regionStageClass: RegionStage,
 	cityStageClass: CityStageCities,
 	cardStageClass: CardStage,
-	logger: new Logger('cities'),
-	clustes,
+	clusters,
 })

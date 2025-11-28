@@ -6,6 +6,7 @@ import { IRegionStage } from '../models/i-region-stage'
 import Logger from '../../services/logger/log-service'
 import { logStateEnum } from '../../services/models/log-state'
 import { clusterNamesEnum } from '../../services/models/cluster'
+import { cancelationTokenType } from '../models/cancelation-token'
 
 export default class RegionStage implements IRegionStage {
 	private _cityStage: ICityStage
@@ -19,8 +20,10 @@ export default class RegionStage implements IRegionStage {
 		this._filteredRegions = clustersService.getRegions(clustes)
 	}
 
-	go = async (driver: DriverExtention, regionNumber: number | undefined, cityNumber: number | undefined) => {
+	go = async (driver: DriverExtention, regionNumber: number | undefined, cityNumber: number | undefined, cancelationToken: cancelationTokenType) => {
 		await driver.openRegions(this._logger)
+
+		if (cancelationToken.isInterrupted) return
 
 		const regionsLength = (await driver.findArray(selectors.regions)).length
 
@@ -44,6 +47,9 @@ export default class RegionStage implements IRegionStage {
 
 				await region.click()
 				await driver.sleep(3000)
+
+				if (cancelationToken.isInterrupted) return
+
 				await driver.waitElementLocated(this._logger, selectors.cities, 'cities', async () => {
 					await driver.openRegions(this._logger)
 					await driver.waitElementLocated(this._logger, selectors.regions, 'regions', async () => await driver.openRegions(this._logger))
@@ -58,11 +64,14 @@ export default class RegionStage implements IRegionStage {
 					await driver.refresh()
 					await driver.sleep(3000)
 
+					if (cancelationToken.isInterrupted) return
+
 					i--
 					continue
 				}
 
-				await this._cityStage.go(driver, citiesLength, regionName, i, regionNumber, cityNumber)
+				await this._cityStage.go(driver, citiesLength, regionName, i, regionNumber, cityNumber, cancelationToken)
+				if (cancelationToken.isInterrupted) return
 
 				this._logger.log(`сбор данных по региону ${regionName} завершён. ${filteredRegionCounter ?? i + 1} из ${filteredRegionsLength}`)
 			} catch (err: any) {
