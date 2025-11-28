@@ -11,6 +11,7 @@ export default class DriverExtention implements IDriverExtention {
 	constructor() {
 		const options = new chrome.Options()
 		options.setPageLoadStrategy('eager')
+		options.addArguments('--log-level=3')
 		this._driver = new Builder().forBrowser(Browser.CHROME).setChromeOptions(options).build()
 	}
 
@@ -50,9 +51,9 @@ export default class DriverExtention implements IDriverExtention {
 	goNextCity = async (logger: Logger, region: WebElement, regionIndex?: number) => {
 		await region.click()
 		await this.sleep(3000)
-		await this.waitElementLocated(logger, selectors.cities, 'cities', async () => {
+		await this.waitElementLocated(logger, selectors.cities, 'goNextCity города', async () => {
 			await this.openRegions(logger)
-			await this.waitElementLocated(logger, selectors.regions, 'regions', async () => await this.openRegions(logger))
+			await this.waitElementLocated(logger, selectors.regions, 'goNextCity регионы', async () => await this.openRegions(logger))
 			const region = await this.unsafeFind(selectors.regions, regionIndex)
 			await region.click()
 		})
@@ -90,7 +91,7 @@ export default class DriverExtention implements IDriverExtention {
 				if (isElementLocated) break
 			} catch (e) {
 				await this.refresh()
-				logger.log(`refreshed in ${place}`, logStateEnum.warning)
+				logger.log(`Перезагрузка. Место: ${place}`, logStateEnum.warning)
 				await this.sleep(5000)
 				if (action) {
 					await action()
@@ -102,7 +103,7 @@ export default class DriverExtention implements IDriverExtention {
 	}
 
 	clickCurrentCity = async (logger: Logger) => {
-		await this.waitElementLocated(logger, selectors.currentCity, 'currentCity', async () => await this.refresh())
+		await this.waitElementLocated(logger, selectors.currentCity, 'currentCity кнопка', async () => await this.refresh())
 		const currentCity = await this.unsafeFind(selectors.currentCity)
 		await currentCity.click()
 		await this.sleep(2000)
@@ -110,7 +111,7 @@ export default class DriverExtention implements IDriverExtention {
 
 	openRegions = async (logger: Logger) => {
 		await this.clickCurrentCity(logger)
-		await this.waitElementLocated(logger, selectors.regionsButton, 'regionsButton', async () => await this.clickCurrentCity(logger))
+		await this.waitElementLocated(logger, selectors.regionsButton, 'openRegions кнопка', async () => await this.clickCurrentCity(logger))
 		const regionsButton = await this.unsafeFind(selectors.regionsButton)
 		await regionsButton.click()
 		await this.sleep(2000)

@@ -6,23 +6,19 @@ import { commandsEnum, isCommandsEnum, isRootStageName, promptType, stagesDictio
 export default class ReadLineService {
 	private _stages: stagesDictionary
 	private _rl: readline.Interface
-	private _rlOptions = {
+	private static _rlOptions = {
 		input: process.stdin,
 		output: process.stdout,
 		prompt: 'Парсер слушает: ',
 	}
+	private _rootStageNames: string
 
 	constructor(...rootStages: RootStage[]) {
 		this._stages = [...rootStages].reduce((p, i) => ({ ...p, [i.name]: i }), {} as stagesDictionary)
-		this._rl = readline.createInterface(this._rlOptions)
-	}
-
-	_validateInput = (input: string): promptType | undefined => {
-		const { 0: command, 1: key, 2: regionNumberValue, 3: cityNumberValue } = input.trim().toLowerCase().split(' ')
-		const regionNumber = Number.isInteger(+regionNumberValue) && +regionNumberValue > -1 ? +regionNumberValue : undefined
-		const cityNumber = Number.isInteger(+cityNumberValue) && +cityNumberValue > -1 ? +cityNumberValue : undefined
-
-		if (isCommandsEnum(command) && isRootStageName(key)) return { command, key, regionNumber, cityNumber }
+		this._rl = readline.createInterface(ReadLineService._rlOptions)
+		this._rootStageNames = Object.values(rootStageNamesEnum)
+			.filter(i => i !== rootStageNamesEnum.cities)
+			.join('|')
 	}
 
 	init = (): void => {
@@ -30,23 +26,51 @@ export default class ReadLineService {
 		this._rl.on('line', this._lineListener)
 	}
 
+	_validateInput = (input: string): promptType | undefined => {
+		const {
+			0: command,
+			1: key,
+			2: regionNumberValue,
+			3: cityNumberValue,
+		} = input
+			.trim()
+			.toLowerCase()
+			.split(' ')
+			.filter(i => i !== undefined)
+
+		const regionNumber = Number.isInteger(+regionNumberValue) && +regionNumberValue > -1 ? +regionNumberValue : undefined
+		const cityNumber = Number.isInteger(+cityNumberValue) && +cityNumberValue > -1 ? +cityNumberValue : undefined
+
+		if (isCommandsEnum(command) && isRootStageName(key)) return { command, key, regionNumber, cityNumber }
+	}
+
 	_lineListener = (input: string): void => {
 		const command = this._validateInput(input)
+		const isRegionOrCityNotProvided = command?.regionNumber === undefined || command.cityNumber === undefined
 
 		switch (command?.command) {
 			case commandsEnum.restart:
-				this._stages[command.key].cancelationToken.isInterrupted = true
-				this._stages[command.key].restart(command.regionNumber, command.cityNumber)
+				if (isRegionOrCityNotProvided) {
+					this._logStartInfo()
+					break
+				}
 
+				this._stages[command.key].restart(command.regionNumber, command.cityNumber)
 				break
+
 			case commandsEnum.stop:
-				this._stages[command.key].cancelationToken.isInterrupted = true
+				this._stages[command.key].stop()
 				break
-			case commandsEnum.start:
-				this._stages[command.key].cancelationToken.isInterrupted = false
-				this._stages[command.key].restart(command.regionNumber, command.cityNumber)
 
+			case commandsEnum.start:
+				if (isRegionOrCityNotProvided) {
+					this._logStartInfo()
+					break
+				}
+
+				this._stages[command.key].start(command.regionNumber, command.cityNumber)
 				break
+
 			default:
 				this._logCommandInfo()
 		}
@@ -54,12 +78,14 @@ export default class ReadLineService {
 		this._rl.prompt()
 	}
 
+	_logStartInfo = () => {
+		console.log(`Для команд ${commandsEnum.restart} или ${commandsEnum.start} укажите номера региона и города через пробел`)
+		console.log(`[${commandsEnum.restart}|${commandsEnum.start}] [${this._rootStageNames}] [номер региона] [номер города]`)
+	}
+
 	_logCommandInfo = (): void => {
 		console.log('Формат команды:')
-		console.log(
-			`[${Object.values(commandsEnum).join('|')}] [${Object.values(rootStageNamesEnum)
-				.filter(i => i !== rootStageNamesEnum.cities)
-				.join('|')}] [номер региона (необязательно)] [номер города (необязательно)]`
-		)
+		console.log(`[${commandsEnum.restart}|${commandsEnum.start}] [${this._rootStageNames}] [номер региона] [номер города]`)
+		console.log(`[${commandsEnum.stop}] [${this._rootStageNames}]`)
 	}
 }

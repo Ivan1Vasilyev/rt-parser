@@ -5,6 +5,8 @@ export interface IRootStage {
 	cancelationToken: cancelationTokenType
 	go(regionNumber?: number | undefined, cityNumber?: number | undefined): Promise<void>
 	restart(regionNumber?: number | undefined, cityNumber?: number | undefined): void
+	start(regionNumber?: number | undefined, cityNumber?: number | undefined): void
+	stop(): void
 }
 
 export enum rootStageNamesEnum {

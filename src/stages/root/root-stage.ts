@@ -11,6 +11,7 @@ export default class RootStage implements IRootStage {
 	private _regionStage: IRegionStage
 	private _logger: Logger
 	private _isOnWork = false
+	private _isOnRestarting = false
 
 	public cancelationToken: cancelationTokenType = { isInterrupted: false }
 	public name: rootStageNamesEnum
@@ -24,16 +25,42 @@ export default class RootStage implements IRootStage {
 		this._regionStage = new regionStageClass(cityStage, this._logger, clustes)
 	}
 
-	restart = (regionNumber?: number | undefined, cityNumber?: number | undefined) => {
-		if (this._isOnWork && !this.cancelationToken.isInterrupted) {
-			console.log(`${this.name} is already started`)
+	stop = () => {
+		if (!this._isOnWork) {
+			console.log(`${this.name} уже остановлен`)
+			return
+		}
+		this.cancelationToken.isInterrupted = true
+	}
+
+	start = (regionNumber?: number | undefined, cityNumber?: number | undefined): void => {
+		if (this._isOnWork) {
+			console.log(`${this.name} уже работает`)
 			return
 		}
 
+		this.go(regionNumber, cityNumber)
+	}
+
+	restart = (regionNumber?: number | undefined, cityNumber?: number | undefined) => {
+		if (this._isOnRestarting) {
+			console.log(`${this.name} уже на рестарте, дождитесь`)
+			return
+		}
+
+		if (!this._isOnWork) {
+			console.log(`${this.name} остановлен, используйте start`)
+			return
+		}
+
+		this.stop()
+		this._isOnRestarting = true
+
 		let interval = setInterval(() => {
-			if (!this.cancelationToken.isInterrupted && !this._isOnWork) {
+			if (!this.cancelationToken.isInterrupted) {
 				clearInterval(interval)
 
+				this._isOnRestarting = false
 				this.go(regionNumber, cityNumber)
 			}
 		}, 500)
@@ -52,11 +79,11 @@ export default class RootStage implements IRootStage {
 			await this._regionStage.go(driver, regionNumber, cityNumber, this.cancelationToken)
 
 			const message = this.cancelationToken.isInterrupted ? 'Прервано' : 'Завершено'
-			this.cancelationToken.isInterrupted = false
 
 			await driver.quit()
 
 			this._logger.log(message)
+			this.cancelationToken.isInterrupted = false
 			this._isOnWork = false
 		} catch (err: any) {
 			this._isOnWork = false
@@ -64,17 +91,20 @@ export default class RootStage implements IRootStage {
 			const fixedRegionNumber = err.regionNumber ?? regionNumber ?? 0
 			const fixedCityNumber = err.cityNumber ?? cityNumber ?? 0
 
-			this._logger.log('я упал...', logStateEnum.error)
-			this._logger.log(err.error || err, logStateEnum.error)
-			console.log(err.error || err)
-			this._logger.log(`для продолжения - регион, город: ${fixedRegionNumber}, ${fixedCityNumber}`, logStateEnum.warning)
+			const error = err.thrownError || err
+			console.log(error)
 
-			if (err.error?.name === 'NoSuchWindowError') {
+			this._logger.log('я упал...', logStateEnum.error)
+			this._logger.log(error, logStateEnum.error)
+			this._logger.log(`для продолжения - регион, город: ${fixedRegionNumber} ${fixedCityNumber}`, logStateEnum.warning)
+
+			if (error.name === 'NoSuchWindowError') {
 				this._logger.log('было закрыто окно браузера', logStateEnum.warning)
 			} else {
-				if (err.error?.code === 'EBUSY') {
+				if (error.code === 'EBUSY') {
 					this._logger.log(`В момент внесения записи файл .xslx был открыт`, logStateEnum.warning)
 				}
+
 				await driver.quit()
 				this.go(fixedRegionNumber, fixedCityNumber)
 			}

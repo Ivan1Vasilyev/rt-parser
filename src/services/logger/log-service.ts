@@ -13,7 +13,7 @@ export default class Logger {
 		[logStateEnum.default]: '',
 	}
 
-	constructor(logFileName: string = 'logs') {
+	constructor(logFileName: string = 'no_name') {
 		this._logFileName = `${logFileName}.log`
 		this._logFilePath = path.join(this._logsDir, this._logFileName)
 

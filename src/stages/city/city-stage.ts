@@ -36,17 +36,22 @@ export default class CityStage implements ICityStage {
 				if (cancelationToken.isInterrupted) return
 
 				if (this._isRefreshed) {
-					await driver.waitElementLocated(this._logger, selectors.currentCity, 'currentCity after refresh', async () => await driver.refresh())
+					await driver.waitElementLocated(this._logger, selectors.currentCity, 'currentCity после перезагрузки страницы', async () => await driver.refresh())
 
 					this._isRefreshed = false
 				} else {
 					if (cancelationToken.isInterrupted) return
-					await driver.waitElementLocated(this._logger, selectors.regions, 'regions', async () => await driver.openRegions(this._logger))
+					await driver.waitElementLocated(this._logger, selectors.regions, 'ожидание регионов', async () => await driver.openRegions(this._logger))
 
 					if (cancelationToken.isInterrupted) return
-					await driver.waitElementLocated(this._logger, selectors.cities, 'cities', async () => {
+					await driver.waitElementLocated(this._logger, selectors.cities, 'ожидание городов', async () => {
 						await driver.openRegions(this._logger)
-						await driver.waitElementLocated(this._logger, selectors.regions, 'regions after cities', async () => await driver.openRegions(this._logger))
+						await driver.waitElementLocated(
+							this._logger,
+							selectors.regions,
+							'ожидание регионов, не дождались городов',
+							async () => await driver.openRegions(this._logger)
+						)
 						const region = await driver.unsafeFind(selectors.regions, currentRegionIndex)
 						await region.click()
 					})
@@ -79,7 +84,7 @@ export default class CityStage implements ICityStage {
 
 					if (counter > 8) {
 						await driver.refresh()
-						this._logger.log(`refreshed in loading tariffs. City: ${this._cityName}`, logStateEnum.warning)
+						this._logger.log(`перезагрузка на тарифах: ${this._cityName}`, logStateEnum.warning)
 						this._isRefreshed = true
 						counter = 0
 						i--
@@ -116,7 +121,7 @@ export default class CityStage implements ICityStage {
 				if (cancelationToken.isInterrupted) return
 
 				if (i < citiesLength - 1) {
-					await driver.waitElementLocated(this._logger, selectors.regions, `cities end. City - ${this._cityName}`, async () => await driver.openRegions(this._logger))
+					await driver.waitElementLocated(this._logger, selectors.regions, `конец цикла городов: ${this._cityName}`, async () => await driver.openRegions(this._logger))
 					const currentRegion = (await driver.findArray(selectors.regions))[currentRegionIndex]
 					await currentRegion.click()
 					await driver.sleep(1000)
@@ -124,7 +129,7 @@ export default class CityStage implements ICityStage {
 					if (cancelationToken.isInterrupted) return
 				}
 			} catch (err) {
-				throw { error: err, cityNumber: i }
+				throw { thrownError: err, cityNumber: i }
 			}
 		}
 	}

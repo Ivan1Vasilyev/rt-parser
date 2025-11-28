@@ -35,7 +35,7 @@ export default class RegionStage implements IRegionStage {
 			if (regionNumber && regionNumber > i) i = regionNumber
 
 			try {
-				await driver.waitElementLocated(this._logger, selectors.regions, 'regions', async () => await driver.openRegions(this._logger))
+				await driver.waitElementLocated(this._logger, selectors.regions, 'регионы', async () => await driver.openRegions(this._logger))
 
 				const region = await driver.unsafeFind(selectors.regions, i)
 				const regionName = await region.getText()
@@ -50,9 +50,9 @@ export default class RegionStage implements IRegionStage {
 
 				if (cancelationToken.isInterrupted) return
 
-				await driver.waitElementLocated(this._logger, selectors.cities, 'cities', async () => {
+				await driver.waitElementLocated(this._logger, selectors.cities, 'города', async () => {
 					await driver.openRegions(this._logger)
-					await driver.waitElementLocated(this._logger, selectors.regions, 'regions', async () => await driver.openRegions(this._logger))
+					await driver.waitElementLocated(this._logger, selectors.regions, 'регионы', async () => await driver.openRegions(this._logger))
 					const region = await driver.unsafeFind(selectors.regions, i)
 					await region.click()
 				})
@@ -75,7 +75,7 @@ export default class RegionStage implements IRegionStage {
 
 				this._logger.log(`сбор данных по региону ${regionName} завершён. ${filteredRegionCounter ?? i + 1} из ${filteredRegionsLength}`)
 			} catch (err: any) {
-				throw { error: err.error || err, regionNumber: i, cityNumber: err.cityNumber || cityNumber }
+				throw { thrownError: err.thrownError || err, regionNumber: i, cityNumber: err.cityNumber ?? cityNumber }
 			}
 		}
 	}

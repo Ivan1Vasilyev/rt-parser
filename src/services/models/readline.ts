@@ -10,9 +10,9 @@ export type promptType = {
 }
 
 export enum commandsEnum {
+	start = 'start',
 	restart = 'restart',
 	stop = 'stop',
-	start = 'start',
 }
 
 export const isCommandsEnum = (value: string): value is commandsEnum => value in commandsEnum
