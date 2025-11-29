@@ -5,6 +5,7 @@ import selectors from '../../utils/selectors'
 import clustersService from '../../services/cluster/cluster-service'
 import { tariffDataKeysEnum, tariffDataType } from '../../services/xlsx/xlsx-models'
 import xlsxService from '../../services/xlsx/xlsx-service'
+import { cancelationTokenType } from '../root/i-root-stage'
 
 type tariffInfoType = {
 	tariffInfo: string
@@ -156,12 +157,14 @@ export default class CardStage implements ICardStage {
 		return await driver.getText(webElement, this._tariffNameSelector)
 	}
 
-	go = async (driver: DriverService, cardsContainer: WebElement, cityName: string, regionName: string) => {
+	go = async (driver: DriverService, cardsContainer: WebElement, cityName: string, regionName: string, cancelationToken: cancelationTokenType) => {
 		const tariffData = [] as tariffDataType[]
 		const tariffs = await driver.findArray(selectors.tariffs)
 		const cluster = clustersService.getClusterName(regionName)
 
 		for (let i = 0; i < tariffs.length; i++) {
+			if (cancelationToken.isInterrupted) return
+
 			const currentTariffData = xlsxService.getTemplate()
 			const { promoPrice, price } = await this._parsePrices(driver, tariffs[i])
 			const { tariffInfo, routerForRent, TVBoxForRent, TVBoxToBuy } = await this._parseTariffInfo(driver, tariffs[i])

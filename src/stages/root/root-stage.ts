@@ -68,7 +68,7 @@ export default class RootStage implements IRootStage {
 		}, 500)
 	}
 
-	go = async (regionNumber?: number | undefined, cityNumber?: number | undefined) => {
+	go = async (regionNumber?: number, cityNumber?: number) => {
 		this._isOnWork = true
 		const driver = new DriverService()
 
@@ -78,7 +78,6 @@ export default class RootStage implements IRootStage {
 			await this._closeAndFinish(driver)
 		} catch (error) {
 			this._isOnWork = false
-
 			this._errorHandler(driver, error, regionNumber, cityNumber)
 		}
 	}

@@ -62,5 +62,4 @@ class XlsxService {
 	}
 }
 
-const xlsxService = new XlsxService('РТ тарифы')
-export default xlsxService
+export default new XlsxService('РТ тарифы')

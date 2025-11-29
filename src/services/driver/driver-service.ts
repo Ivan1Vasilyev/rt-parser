@@ -87,17 +87,13 @@ export default class DriverService implements IDriverService {
 	waitElementLocated = async (logger: ILoggerService, selector: string, place: string, action: Function) => {
 		while (true) {
 			try {
-				const isElementLocated = await this.wait(until.elementLocated(By.css(selector)), 50000)
+				const isElementLocated = await this.wait(until.elementLocated(By.css(selector)), 10000)
 				if (isElementLocated) break
 			} catch (e) {
 				await this.refresh()
 				logger.log(`Перезагрузка. Место: ${place}`, logStateEnum.warning)
 				await this.sleep(5000)
-				if (typeof action === 'function') {
-					await action()
-				} else {
-					continue
-				}
+				await action()
 			}
 		}
 	}

@@ -90,5 +90,4 @@ class ReadLineService {
 	}
 }
 
-const readLineService = new ReadLineService()
-export default readLineService
+export default new ReadLineService()

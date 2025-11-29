@@ -40,10 +40,11 @@ export default class RegionStage implements IRegionStage {
 				const region = await driver.unsafeFind(selectors.regions, i)
 				const regionName = await region.getText()
 
-				if (this._filteredRegions.length > 0 && !this._filteredRegions.some((r: string) => regionName.includes(r))) continue
-				this._logger.log('регион: ' + regionName)
-
 				if (filteredRegionCounter !== null) filteredRegionCounter++
+
+				if (this._filteredRegions.length > 0 && !this._filteredRegions.some((r: string) => regionName.includes(r))) continue
+
+				this._logger.log('регион: ' + regionName)
 
 				await region.click()
 				await driver.sleep(3000)
@@ -56,6 +57,7 @@ export default class RegionStage implements IRegionStage {
 					const region = await driver.unsafeFind(selectors.regions, i)
 					await region.click()
 				})
+
 				const citiesLength = (await driver.findArray(selectors.cities)).length
 				if (citiesLength == 0) {
 					this._logger.log(`В регионе ${regionName} не загрузились города`, logStateEnum.warning)
@@ -65,6 +67,8 @@ export default class RegionStage implements IRegionStage {
 					await driver.sleep(3000)
 
 					if (cancelationToken.isInterrupted) return
+
+					if (filteredRegionCounter !== null) filteredRegionCounter--
 
 					i--
 					continue
@@ -78,7 +82,7 @@ export default class RegionStage implements IRegionStage {
 				if (error instanceof AutoRestartError) {
 					throw error
 				} else if (error instanceof Error) {
-					throw new AutoRestartError(error.message, { regionNumber: i, cityNumber })
+					throw new AutoRestartError(error.message, { regionNumber: i, cityNumber: cityNumber ?? 0 })
 				}
 			}
 		}

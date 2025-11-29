@@ -106,5 +106,4 @@ class ClusterService {
 	}
 }
 
-const clustersService = new ClusterService()
-export default clustersService
+export default new ClusterService()
