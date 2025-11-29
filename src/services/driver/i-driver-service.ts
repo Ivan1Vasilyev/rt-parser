@@ -1,20 +1,20 @@
 import { WebElement } from 'selenium-webdriver'
-import Logger from '../../services/logger/log-service'
+import { ILoggerService } from '../logger/i-logger-service'
 
 const delegatedMethodNames = ['get', 'maximize', 'sleep', 'findElements', 'findElement', 'wait', 'quit', 'refresh', 'scroll'] as const
 type PromiseMethods<T extends readonly string[]> = {
 	[K in T[number]]: (...args: any[]) => Promise<any>
 }
 
-type driverExtentionAsyncMethods = PromiseMethods<typeof delegatedMethodNames>
+type driverDelegatedMethods = PromiseMethods<typeof delegatedMethodNames>
 
-export interface IDriverExtention extends driverExtentionAsyncMethods {
+export interface IDriverService extends driverDelegatedMethods {
 	findArray(selector: string, webElement?: WebElement): Promise<WebElement[]>
 	getText(webElement: WebElement, selector: string): Promise<string>
-	goNextCity(logger: Logger, region: WebElement, regionIndex?: number): Promise<void>
+	goNextCity(logger: ILoggerService, region: WebElement, regionIndex?: number): Promise<void>
 	unsafeFind(selector: string, index?: number): Promise<WebElement>
 	acceptCookes(): Promise<void>
-	waitElementLocated(logger: Logger, selector: string, place: string, action?: Function): Promise<void>
-	clickCurrentCity(logger: Logger): Promise<void>
-	openRegions(logger: Logger): Promise<void>
+	waitElementLocated(logger: ILoggerService, selector: string, place: string, action?: Function): Promise<void>
+	clickCurrentCity(logger: ILoggerService): Promise<void>
+	openRegions(logger: ILoggerService): Promise<void>
 }

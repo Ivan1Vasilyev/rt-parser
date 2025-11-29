@@ -1,33 +1,32 @@
 import { By } from 'selenium-webdriver'
 import selectors from '../../utils/selectors'
-import { ICityStage } from '../models/i-city-stage'
-import DriverExtention from '../../extentions/driver/driver-extention'
-import { ICardStage } from '../models/i-card-stage'
-import Logger from '../../services/logger/log-service'
-import { logStateEnum } from '../../services/models/log-state'
-import { cancelationTokenType } from '../models/cancelation-token'
+import DriverService from '../../services/driver/driver-service'
+import { ICardStage } from '../card/i-card-stage'
+import { ILoggerService, logStateEnum } from '../../services/logger/i-logger-service'
+import { cancelationTokenType, startParamsType } from '../root/i-root-stage'
+import { ICityStage } from './i-city-stage'
+import AutoRestartError from '../../error/auto-restart-error'
 
 export default class CityStage implements ICityStage {
 	protected _isRefreshed: boolean = false
 	protected _cityName: string = ''
-	protected _cardStageClass: ICardStage
+	protected _cardStage: ICardStage
 	protected _tariffsSelector: string = selectors.tariffs
 	protected _containerSelector: string = selectors.container
-	private _logger: Logger
+	private _logger: ILoggerService
 
-	constructor(CardStageClass: ICardStage, logger: Logger) {
-		this._cardStageClass = CardStageClass
+	constructor(CardStage: ICardStage, logger: ILoggerService) {
+		this._cardStage = CardStage
 		this._logger = logger
 	}
 
 	go = async (
-		driver: DriverExtention,
+		driver: DriverService,
 		citiesLength: number,
 		regionName: string,
 		currentRegionIndex: number,
-		regionNumber: number | undefined,
-		cityNumber: number | undefined,
-		cancelationToken: cancelationTokenType
+		cancelationToken: cancelationTokenType,
+		{ regionNumber, cityNumber }: startParamsType
 	) => {
 		for (let i = 0; i < citiesLength; i++) {
 			try {
@@ -109,7 +108,7 @@ export default class CityStage implements ICityStage {
 
 					if (cancelationToken.isInterrupted) return
 
-					await this._cardStageClass.go(driver, cardsContainer, this._cityName, regionName)
+					await this._cardStage.go(driver, cardsContainer, this._cityName, regionName)
 
 					if (cancelationToken.isInterrupted) return
 
@@ -128,8 +127,10 @@ export default class CityStage implements ICityStage {
 
 					if (cancelationToken.isInterrupted) return
 				}
-			} catch (err) {
-				throw { thrownError: err, cityNumber: i }
+			} catch (error) {
+				if (error instanceof Error) {
+					throw new AutoRestartError(error.message, { regionNumber, cityNumber: i })
+				}
 			}
 		}
 	}

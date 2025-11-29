@@ -1,5 +1,6 @@
-import { clustersType, clusterNamesEnum } from '../models/cluster'
+import { clustersType, clusterNamesEnum } from './cluster-models'
 
+// типа singletone, поэтому без interface
 class ClusterService {
 	_eastRegions = [
 		'Алтай',

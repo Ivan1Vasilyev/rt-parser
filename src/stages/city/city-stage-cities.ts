@@ -1,18 +1,19 @@
-import DriverExtention from '../../extentions/driver/driver-extention'
+import DriverService from '../../services/driver/driver-service'
 import selectors from '../../utils/selectors'
-import { ICityStage } from '../models/i-city-stage'
-import { citiesDataType, tariffDataKeysEnum } from '../../extentions/models/i-xlsx-extention'
-import xlsxService from '../../extentions/xlsx/xlsx-extention'
+import { citiesDataType, tariffDataKeysEnum } from '../../services/xlsx/xlsx-models'
 import clustersService from '../../services/cluster/cluster-service'
+import { ICityStage } from './i-city-stage'
+import xlsxService from '../../services/xlsx/xlsx-service'
+import { cancelationTokenType, startParamsType } from '../root/i-root-stage'
 
 export default class CityStageCities implements ICityStage {
 	go = async (
-		driver: DriverExtention,
+		driver: DriverService,
 		citiesLength: number,
 		regionName: string,
 		currentRegionIndex: number,
-		regionNumber: number | undefined,
-		cityNumber: number | undefined
+		cancelationToken: cancelationTokenType,
+		{ regionNumber, cityNumber }: startParamsType
 	) => {
 		const citiesData = [] as citiesDataType[]
 		const cluster = clustersService.getClusterName(regionName)

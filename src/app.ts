@@ -1,8 +1,8 @@
-import { clusterNamesEnum } from './services/models/cluster'
+import { clusterNamesEnum } from './services/cluster/cluster-models'
 import RootStage from './stages/root/root-stage'
 import { getMainConfig, getInternetConfig, getRanchoConfig, getCitiesOnlyConfig } from './utils/page-config'
-import { rootStageNamesEnum } from './stages/models/i-root-stage'
-import ReadLineService from './services/readline/readline-service'
+import readLineService from './services/readline/readline-service'
+import { rootStageNamesEnum } from './stages/root/i-root-stage'
 
 const east = clusterNamesEnum.east // Восток
 const north = clusterNamesEnum.north // Север
@@ -21,9 +21,9 @@ const internetWay = new RootStage(internetWayConfig, rootStageNamesEnum.internet
 const ranchoWay = new RootStage(ranchoWayConfig, rootStageNamesEnum.rancho)
 const citiesOnlyWay = new RootStage(citiesOnlyConfig, rootStageNamesEnum.cities)
 
+readLineService.init(mainWay, internetWay, ranchoWay)
+
 mainWay.go()
 internetWay.go()
 ranchoWay.go()
 // citiesOnlyWay.go()
-
-new ReadLineService(mainWay, internetWay, ranchoWay).init()

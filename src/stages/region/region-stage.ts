@@ -1,26 +1,27 @@
 import selectors from '../../utils/selectors'
-import { ICityStage } from '../models/i-city-stage'
-import DriverExtention from '../../extentions/driver/driver-extention'
 import clustersService from '../../services/cluster/cluster-service'
-import { IRegionStage } from '../models/i-region-stage'
-import Logger from '../../services/logger/log-service'
-import { logStateEnum } from '../../services/models/log-state'
-import { clusterNamesEnum } from '../../services/models/cluster'
-import { cancelationTokenType } from '../models/cancelation-token'
+import { ILoggerService, logStateEnum } from '../../services/logger/i-logger-service'
+import { clusterNamesEnum } from '../../services/cluster/cluster-models'
+import { cancelationTokenType, startParamsType } from '../root/i-root-stage'
+import { ICityStage } from '../city/i-city-stage'
+import { IRegionStage } from './i-region-stage'
+import { IDriverService } from '../../services/driver/i-driver-service'
+import AutoRestartError from '../../error/auto-restart-error'
 
 export default class RegionStage implements IRegionStage {
 	private _cityStage: ICityStage
 	private _filteredRegions: string[]
-	private _logger: Logger
+	private _logger: ILoggerService
 
-	constructor(cityStage: ICityStage, logger: Logger, clustes: clusterNamesEnum[]) {
+	constructor(cityStage: ICityStage, logger: ILoggerService, clusters: clusterNamesEnum[]) {
 		this._cityStage = cityStage
 		this._logger = logger
 
-		this._filteredRegions = clustersService.getRegions(clustes)
+		this._filteredRegions = clustersService.getRegions(clusters)
 	}
 
-	go = async (driver: DriverExtention, regionNumber: number | undefined, cityNumber: number | undefined, cancelationToken: cancelationTokenType) => {
+	go = async (driver: IDriverService, cancelationToken: cancelationTokenType, { regionNumber, cityNumber }: startParamsType) => {
+		await driver.acceptCookes()
 		await driver.openRegions(this._logger)
 
 		if (cancelationToken.isInterrupted) return
@@ -33,7 +34,6 @@ export default class RegionStage implements IRegionStage {
 
 		for (let i = 0; i < regionsLength; i++) {
 			if (regionNumber && regionNumber > i) i = regionNumber
-
 			try {
 				await driver.waitElementLocated(this._logger, selectors.regions, 'регионы', async () => await driver.openRegions(this._logger))
 
@@ -70,12 +70,16 @@ export default class RegionStage implements IRegionStage {
 					continue
 				}
 
-				await this._cityStage.go(driver, citiesLength, regionName, i, regionNumber, cityNumber, cancelationToken)
+				await this._cityStage.go(driver, citiesLength, regionName, i, cancelationToken, { regionNumber, cityNumber })
 				if (cancelationToken.isInterrupted) return
 
 				this._logger.log(`сбор данных по региону ${regionName} завершён. ${filteredRegionCounter ?? i + 1} из ${filteredRegionsLength}`)
-			} catch (err: any) {
-				throw { thrownError: err.thrownError || err, regionNumber: i, cityNumber: err.cityNumber ?? cityNumber }
+			} catch (error) {
+				if (error instanceof AutoRestartError) {
+					throw error
+				} else if (error instanceof Error) {
+					throw new AutoRestartError(error.message, { regionNumber: i, cityNumber })
+				}
 			}
 		}
 	}

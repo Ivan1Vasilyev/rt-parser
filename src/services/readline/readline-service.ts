@@ -1,10 +1,10 @@
 import readline from 'readline'
-import RootStage from '../../stages/root/root-stage'
-import { rootStageNamesEnum } from '../../stages/models/i-root-stage'
-import { commandsEnum, isCommandsEnum, isRootStageName, promptType, stagesDictionary } from '../models/readline'
+import { IRootStage, rootStageNamesEnum } from '../../stages/root/i-root-stage'
+import { stagesDictionary, promptType, isCommandsEnum, isRootStageName, commandsEnum } from './readline-models'
 
-export default class ReadLineService {
-	private _stages: stagesDictionary
+// типа singletone, поэтому без interface
+class ReadLineService {
+	private _stages: stagesDictionary = {} as stagesDictionary
 	private _rl: readline.Interface
 	private static _rlOptions = {
 		input: process.stdin,
@@ -13,15 +13,15 @@ export default class ReadLineService {
 	}
 	private _rootStageNames: string
 
-	constructor(...rootStages: RootStage[]) {
-		this._stages = [...rootStages].reduce((p, i) => ({ ...p, [i.name]: i }), {} as stagesDictionary)
+	constructor() {
 		this._rl = readline.createInterface(ReadLineService._rlOptions)
 		this._rootStageNames = Object.values(rootStageNamesEnum)
 			.filter(i => i !== rootStageNamesEnum.cities)
 			.join('|')
 	}
 
-	init = (): void => {
+	init = (...rootStages: IRootStage[]): void => {
+		this._stages = [...rootStages].reduce((p, i) => ({ ...p, [i.name]: i }), {} as stagesDictionary)
 		this._rl.prompt()
 		this._rl.on('line', this._lineListener)
 	}
@@ -55,7 +55,7 @@ export default class ReadLineService {
 					break
 				}
 
-				this._stages[command.key].restart(command.regionNumber, command.cityNumber)
+				this._stages[command.key].restart({ regionNumber: command.regionNumber, cityNumber: command.cityNumber })
 				break
 
 			case commandsEnum.stop:
@@ -68,7 +68,7 @@ export default class ReadLineService {
 					break
 				}
 
-				this._stages[command.key].start(command.regionNumber, command.cityNumber)
+				this._stages[command.key].start({ regionNumber: command.regionNumber, cityNumber: command.cityNumber })
 				break
 
 			default:
@@ -89,3 +89,6 @@ export default class ReadLineService {
 		console.log(`[${commandsEnum.stop}] [${this._rootStageNames}]`)
 	}
 }
+
+const readLineService = new ReadLineService()
+export default readLineService

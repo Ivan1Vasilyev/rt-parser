@@ -1,9 +1,10 @@
 import fs from 'fs'
 import path from 'path'
 import XLSX from 'xlsx'
-import { IXlsxExtention, tariffDataType, tariffDataKeysEnum, citiesDataType } from '../models/i-xlsx-extention'
+import { tariffDataType, citiesDataType, tariffDataKeysEnum } from './xlsx-models'
 
-class XlsxExtention<T> implements IXlsxExtention {
+// типа singletone, поэтому без interface
+class XlsxService {
 	_TARIFFS_SHEET_NAME: string = 'Тарифы'
 	_CITIES_SHEET_NAME: string = 'Индексы'
 	_workbook: XLSX.WorkBook
@@ -61,5 +62,5 @@ class XlsxExtention<T> implements IXlsxExtention {
 	}
 }
 
-const xlsxService = new XlsxExtention<tariffDataType>('РТ тарифы')
+const xlsxService = new XlsxService('РТ тарифы')
 export default xlsxService

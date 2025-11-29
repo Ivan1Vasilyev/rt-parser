@@ -1,13 +1,18 @@
-import { cancelationTokenType } from './cancelation-token'
-
 export interface IRootStage {
 	name: rootStageNamesEnum
 	cancelationToken: cancelationTokenType
 	go(regionNumber?: number | undefined, cityNumber?: number | undefined): Promise<void>
-	restart(regionNumber?: number | undefined, cityNumber?: number | undefined): void
-	start(regionNumber?: number | undefined, cityNumber?: number | undefined): void
+	restart(startParams: startParamsType): void
+	start(startParams: startParamsType): void
 	stop(): void
 }
+
+export type startParamsType = {
+	regionNumber?: number | undefined
+	cityNumber?: number | undefined
+}
+
+export type cancelationTokenType = { isInterrupted: Boolean }
 
 export enum rootStageNamesEnum {
 	main = 'main',

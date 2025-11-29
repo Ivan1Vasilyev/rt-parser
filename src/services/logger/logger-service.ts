@@ -1,13 +1,14 @@
 import fs from 'fs'
 import path from 'path'
-import { logStateEnum } from '../models/log-state'
+import { ILoggerService, logStateEnum, statesType } from './i-logger-service'
 
-export default class Logger {
+// типа scope, но не scope
+export default class LoggerService implements ILoggerService {
+	private _LOGS_DIRECTORY: string = './logs'
 	private _logFileName: string
-	private _logsDir: string = './logs'
 	private _logFilePath: any
 	private _logs: string = ''
-	private _states: Record<logStateEnum, string> = {
+	private _states: statesType = {
 		[logStateEnum.error]: 'ERROR! ',
 		[logStateEnum.warning]: 'WARNING! ',
 		[logStateEnum.default]: '',
@@ -15,10 +16,10 @@ export default class Logger {
 
 	constructor(logFileName: string = 'no_name') {
 		this._logFileName = `${logFileName}.log`
-		this._logFilePath = path.join(this._logsDir, this._logFileName)
+		this._logFilePath = path.join(this._LOGS_DIRECTORY, this._logFileName)
 
-		if (!fs.existsSync(this._logsDir)) {
-			fs.mkdirSync(this._logsDir, { recursive: true })
+		if (!fs.existsSync(this._LOGS_DIRECTORY)) {
+			fs.mkdirSync(this._LOGS_DIRECTORY, { recursive: true })
 		}
 	}
 

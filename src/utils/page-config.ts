@@ -1,15 +1,14 @@
-import Logger from '../services/logger/log-service'
-import { clusterNamesEnum } from '../services/models/cluster'
+import { clusterNamesEnum } from '../services/cluster/cluster-models'
 import CardStage from '../stages/card/card-stage'
 import CardStageInternet from '../stages/card/card-stage-internet'
 import CardStageRancho from '../stages/card/card-stage-rancho'
 import CityStage from '../stages/city/city-stage'
 import CityStageCities from '../stages/city/city-stage-cities'
 import CityStageInternet from '../stages/city/city-stage-internet'
-import { ICardStageCtor } from '../stages/models/i-card-stage'
-import { ICityStageCtor } from '../stages/models/i-city-stage'
-import { IRegionStageCtor } from '../stages/models/i-region-stage'
+import { ICardStageCtor } from '../stages/card/i-card-stage'
 import RegionStage from '../stages/region/region-stage'
+import { ICityStageCtor } from '../stages/city/i-city-stage'
+import { IRegionStageCtor } from '../stages/region/i-region-stage'
 
 export type pageConfig = {
 	path: string
@@ -42,6 +41,7 @@ export const getRanchoConfig = (clusters: clusterNamesEnum[]): pageConfig => ({
 	regionStageClass: RegionStage,
 	cityStageClass: CityStageInternet,
 	cardStageClass: CardStageRancho,
+
 	clusters,
 })
 

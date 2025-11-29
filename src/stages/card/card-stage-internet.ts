@@ -1,16 +1,16 @@
 import { WebElement } from 'selenium-webdriver'
-import DriverExtention from '../../extentions/driver/driver-extention'
+import DriverService from '../../services/driver/driver-service'
 import CardStage from './card-stage'
 import clustersService from '../../services/cluster/cluster-service'
-import xlsxService from '../../extentions/xlsx/xlsx-extention'
-import { tariffDataKeysEnum, tariffDataType } from '../../extentions/models/i-xlsx-extention'
+import { tariffDataKeysEnum, tariffDataType } from '../../services/xlsx/xlsx-models'
+import xlsxService from '../../services/xlsx/xlsx-service'
 
 export default class CardStageInternet extends CardStage {
 	protected _oldPriceSelector: string = '.rt-price-v3__old-val'
 	protected _priceSelector: string = '.rt-price-v3__val'
 	protected _tariffNameSelector: string = '.landing-offer__name'
 
-	protected override _parsePriceAndDiscountInfo = async (driver: DriverExtention, button: WebElement) => {
+	protected override _parsePriceAndDiscountInfo = async (driver: DriverService, button: WebElement) => {
 		const priceInfoElem = await driver.findArray('.landing-form-card__desc', button)
 		if (priceInfoElem.length) {
 			const priceInfo = await priceInfoElem[0].getText()
@@ -26,7 +26,7 @@ export default class CardStageInternet extends CardStage {
 		return { discountDuration: '', priceInfo: '', discountMark: '' }
 	}
 
-	protected override _parseTariffInfo = async (driver: DriverExtention, container: WebElement) => {
+	protected override _parseTariffInfo = async (driver: DriverService, container: WebElement) => {
 		let tariffInfo = ''
 
 		const addText = (info: string) => {
@@ -54,7 +54,7 @@ export default class CardStageInternet extends CardStage {
 		return { tariffInfo: tariffInfo.trim(), routerForRent: '', TVBoxForRent: '', TVBoxToBuy: '' }
 	}
 
-	protected override _parseOffers = async (driver: DriverExtention, card: WebElement) => {
+	protected override _parseOffers = async (driver: DriverService, card: WebElement) => {
 		let speed = '',
 			tariffInfo = ''
 		const offers = await driver.findArray('.landing-offer__product', card)
@@ -79,7 +79,7 @@ export default class CardStageInternet extends CardStage {
 
 	protected _setStep = (counter: number, maxValue: number): boolean => counter > 0 && counter < maxValue
 
-	go = async (driver: DriverExtention, cardsContainer: WebElement, cityName: string, regionName: string) => {
+	go = async (driver: DriverService, cardsContainer: WebElement, cityName: string, regionName: string) => {
 		const tariffData = [] as tariffDataType[]
 
 		const buttons = await driver.findArray('.landing-form-card', cardsContainer)

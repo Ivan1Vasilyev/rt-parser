@@ -1,11 +1,11 @@
 import { By, until, Builder, Browser, ThenableWebDriver, WebElement, Locator, WebElementCondition } from 'selenium-webdriver'
 import chrome from 'selenium-webdriver/chrome.js'
 import selectors from '../../utils/selectors'
-import { IDriverExtention } from '../models/i-driver-extention'
-import Logger from '../../services/logger/log-service'
-import { logStateEnum } from '../../services/models/log-state'
+import { ILoggerService, logStateEnum } from '../logger/i-logger-service'
+import { IDriverService } from './i-driver-service'
 
-export default class DriverExtention implements IDriverExtention {
+// типа scope, но не scope
+export default class DriverService implements IDriverService {
 	private _driver: ThenableWebDriver
 
 	constructor() {
@@ -33,7 +33,7 @@ export default class DriverExtention implements IDriverExtention {
 
 	maximize = async () => await this._driver.manage().window().maximize()
 
-	findArray = async (selector: string, webElement: WebElement | DriverExtention = this) => {
+	findArray = async (selector: string, webElement: WebElement | DriverService = this) => {
 		const array = [...(await webElement.findElements(By.css(selector)))]
 		return array
 	}
@@ -48,7 +48,7 @@ export default class DriverExtention implements IDriverExtention {
 		return ''
 	}
 
-	goNextCity = async (logger: Logger, region: WebElement, regionIndex?: number) => {
+	goNextCity = async (logger: ILoggerService, region: WebElement, regionIndex?: number) => {
 		await region.click()
 		await this.sleep(3000)
 		await this.waitElementLocated(logger, selectors.cities, 'goNextCity города', async () => {
@@ -84,7 +84,7 @@ export default class DriverExtention implements IDriverExtention {
 		}
 	}
 
-	waitElementLocated = async (logger: Logger, selector: string, place: string, action: Function) => {
+	waitElementLocated = async (logger: ILoggerService, selector: string, place: string, action: Function) => {
 		while (true) {
 			try {
 				const isElementLocated = await this.wait(until.elementLocated(By.css(selector)), 50000)
@@ -93,7 +93,7 @@ export default class DriverExtention implements IDriverExtention {
 				await this.refresh()
 				logger.log(`Перезагрузка. Место: ${place}`, logStateEnum.warning)
 				await this.sleep(5000)
-				if (action) {
+				if (typeof action === 'function') {
 					await action()
 				} else {
 					continue
@@ -102,14 +102,14 @@ export default class DriverExtention implements IDriverExtention {
 		}
 	}
 
-	clickCurrentCity = async (logger: Logger) => {
+	clickCurrentCity = async (logger: ILoggerService) => {
 		await this.waitElementLocated(logger, selectors.currentCity, 'currentCity кнопка', async () => await this.refresh())
 		const currentCity = await this.unsafeFind(selectors.currentCity)
 		await currentCity.click()
 		await this.sleep(2000)
 	}
 
-	openRegions = async (logger: Logger) => {
+	openRegions = async (logger: ILoggerService) => {
 		await this.clickCurrentCity(logger)
 		await this.waitElementLocated(logger, selectors.regionsButton, 'openRegions кнопка', async () => await this.clickCurrentCity(logger))
 		const regionsButton = await this.unsafeFind(selectors.regionsButton)

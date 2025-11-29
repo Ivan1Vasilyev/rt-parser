@@ -1,4 +1,4 @@
-import { IRootStage, rootStageNamesEnum } from '../../stages/models/i-root-stage'
+import { rootStageNamesEnum, IRootStage } from '../../stages/root/i-root-stage'
 
 export type stagesDictionary = Record<rootStageNamesEnum, IRootStage>
 
