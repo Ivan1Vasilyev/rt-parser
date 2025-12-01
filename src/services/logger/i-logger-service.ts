@@ -1,4 +1,4 @@
-export enum logStateEnum {
+export const enum logStateEnum {
 	error,
 	warning,
 	default,

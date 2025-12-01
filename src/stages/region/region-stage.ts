@@ -28,6 +28,7 @@ export default class RegionStage implements IRegionStage {
 
 		const regionsLength = (await driver.findArray(selectors.regions)).length
 
+		// это для корректной итерации и отображения прогресса в случае, если идём по кластерам
 		const isCluster = Boolean(this._filteredRegions.length)
 		let filteredRegionCounter = isCluster ? 0 : null
 		const filteredRegionsLength = isCluster ? this._filteredRegions.length : regionsLength
@@ -40,9 +41,9 @@ export default class RegionStage implements IRegionStage {
 				const region = await driver.unsafeFind(selectors.regions, i)
 				const regionName = await region.getText()
 
-				if (filteredRegionCounter !== null) filteredRegionCounter++
-
+				// Пропускаем, если регион не в составе кластеров
 				if (this._filteredRegions.length > 0 && !this._filteredRegions.some((r: string) => regionName.includes(r))) continue
+				if (filteredRegionCounter !== null) filteredRegionCounter++
 
 				this._logger.log('регион: ' + regionName)
 
@@ -51,12 +52,7 @@ export default class RegionStage implements IRegionStage {
 
 				if (cancelationToken.isInterrupted) return
 
-				await driver.waitElementLocated(this._logger, selectors.cities, 'города', async () => {
-					await driver.openRegions(this._logger)
-					await driver.waitElementLocated(this._logger, selectors.regions, 'регионы', async () => await driver.openRegions(this._logger))
-					const region = await driver.unsafeFind(selectors.regions, i)
-					await region.click()
-				})
+				await driver.waitCities(this._logger, i, 'regionStage')
 
 				const citiesLength = (await driver.findArray(selectors.cities)).length
 				if (citiesLength == 0) {
@@ -81,9 +77,13 @@ export default class RegionStage implements IRegionStage {
 			} catch (error) {
 				if (error instanceof AutoRestartError) {
 					throw error
-				} else if (error instanceof Error) {
-					throw new AutoRestartError(error.message, { regionNumber: i, cityNumber: cityNumber ?? 0 })
 				}
+
+				if (error instanceof Error) {
+					throw new AutoRestartError(error.message, { regionNumber: i, cityNumber: 0 })
+				}
+
+				throw error
 			}
 		}
 	}

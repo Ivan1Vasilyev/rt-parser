@@ -107,6 +107,7 @@ export default class RootStage implements IRootStage {
 		}
 
 		const isBubbleError = error instanceof AutoRestartError
+
 		const fixedRegionNumber = isBubbleError ? error.regionNumber : regionNumber
 		const fixedCityNumber = isBubbleError ? error.cityNumber : cityNumber
 

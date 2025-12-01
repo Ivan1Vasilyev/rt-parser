@@ -11,13 +11,16 @@ class ReadLineService {
 		output: process.stdout,
 		prompt: 'Парсер слушает: ',
 	}
-	private _rootStageNames: string
+
+	private _startCommandInfo: string
+	private _stopCommandInfo: string
 
 	constructor() {
 		this._rl = readline.createInterface(ReadLineService._rlOptions)
-		this._rootStageNames = Object.values(rootStageNamesEnum)
-			.filter(i => i !== rootStageNamesEnum.cities)
-			.join('|')
+		const rootStageNames = Object.values(rootStageNamesEnum).join('|')
+
+		this._startCommandInfo = `[${commandsEnum.restart}|${commandsEnum.start}] [${rootStageNames}] [номер региона] [номер города]`
+		this._stopCommandInfo = `[${commandsEnum.stop}] [${rootStageNames}]`
 	}
 
 	init = (...rootStages: IRootStage[]): void => {
@@ -80,13 +83,13 @@ class ReadLineService {
 
 	_logStartInfo = () => {
 		console.log(`Для команд ${commandsEnum.restart} или ${commandsEnum.start} укажите номера региона и города через пробел`)
-		console.log(`[${commandsEnum.restart}|${commandsEnum.start}] [${this._rootStageNames}] [номер региона] [номер города]`)
+		console.log(this._startCommandInfo)
 	}
 
 	_logCommandInfo = (): void => {
 		console.log('Формат команды:')
-		console.log(`[${commandsEnum.restart}|${commandsEnum.start}] [${this._rootStageNames}] [номер региона] [номер города]`)
-		console.log(`[${commandsEnum.stop}] [${this._rootStageNames}]`)
+		console.log(this._startCommandInfo)
+		console.log(this._stopCommandInfo)
 	}
 }
 

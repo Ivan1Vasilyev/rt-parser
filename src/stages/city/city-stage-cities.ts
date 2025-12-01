@@ -20,6 +20,7 @@ export default class CityStageCities implements ICityStage {
 
 		for (let i = 0; i < citiesLength; i++) {
 			const citiesDataTemplate = xlsxService.getCitiesTemplte()
+			if (cancelationToken.isInterrupted) return
 
 			try {
 				if (cityNumber && regionNumber === currentRegionIndex && cityNumber > i) i = cityNumber

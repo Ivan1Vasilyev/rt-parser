@@ -15,6 +15,7 @@ export interface IDriverService extends driverDelegatedMethods {
 	unsafeFind(selector: string, index?: number): Promise<WebElement>
 	acceptCookes(): Promise<void>
 	waitElementLocated(logger: ILoggerService, selector: string, place: string, action?: Function): Promise<void>
+	waitCities(logger: ILoggerService, index: number, place: string): Promise<void>
 	clickCurrentCity(logger: ILoggerService): Promise<void>
 	openRegions(logger: ILoggerService): Promise<void>
 }

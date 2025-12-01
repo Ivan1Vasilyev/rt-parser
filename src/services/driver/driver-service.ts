@@ -71,7 +71,7 @@ export default class DriverService implements IDriverService {
 				console.log(`нет элемента`)
 			}
 
-			throw `не найден элемент по селектору ${selector}${index ? `, индексу ${index}` : ''}.`
+			throw new Error(`не найден элемент по селектору ${selector}${index ? `, индексу ${index}` : ''}.`)
 		}
 	}
 
@@ -96,6 +96,18 @@ export default class DriverService implements IDriverService {
 				await action()
 			}
 		}
+	}
+
+	waitCities = async (logger: ILoggerService, index: number, place: string) => {
+		// Ждём загрузки городов.
+		await this.waitElementLocated(logger, selectors.cities, `города в ${place}`, async () => {
+			// Если не дождались, страница обновляется, снова открываем регионы
+			await this.openRegions(logger)
+			//  Ждём загрузки регионов (и переоткрываем их, если не дождались)
+			await this.waitElementLocated(logger, selectors.regions, `регионы в ${place}`, async () => await this.openRegions(logger))
+			const region = await this.unsafeFind(selectors.regions, index)
+			await region.click()
+		})
 	}
 
 	clickCurrentCity = async (logger: ILoggerService) => {

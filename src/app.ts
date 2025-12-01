@@ -9,7 +9,7 @@ const north = clusterNamesEnum.north // Север
 const south = clusterNamesEnum.south // Юг
 const westCenterMoscow = clusterNamesEnum.westCenterMoscow // Запад, Центр, Москва
 
-const clusters = [] as clusterNamesEnum[] // пустой - парсится всё.
+const clusters = [westCenterMoscow] as clusterNamesEnum[] // если пустой, парсится всё.
 
 const mainWayConfig = getMainConfig(clusters)
 const internetWayConfig = getInternetConfig(clusters)
@@ -21,7 +21,7 @@ const internetWay = new RootStage(internetWayConfig, rootStageNamesEnum.internet
 const ranchoWay = new RootStage(ranchoWayConfig, rootStageNamesEnum.rancho)
 const citiesOnlyWay = new RootStage(citiesOnlyConfig, rootStageNamesEnum.cities)
 
-readLineService.init(mainWay, internetWay, ranchoWay)
+readLineService.init(mainWay, internetWay, ranchoWay, citiesOnlyWay)
 
 mainWay.go()
 internetWay.go()
