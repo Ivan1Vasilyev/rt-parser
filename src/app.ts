@@ -9,7 +9,7 @@ const north = clusterNamesEnum.north // Север
 const south = clusterNamesEnum.south // Юг
 const westCenterMoscow = clusterNamesEnum.westCenterMoscow // Запад, Центр, Москва
 
-const clusters = [westCenterMoscow] as clusterNamesEnum[] // если пустой, парсится всё.
+const clusters = [] as clusterNamesEnum[] // если пустой, парсится всё.
 
 const mainWayConfig = getMainConfig(clusters)
 const internetWayConfig = getInternetConfig(clusters)
