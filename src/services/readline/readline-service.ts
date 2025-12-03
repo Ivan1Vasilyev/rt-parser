@@ -1,10 +1,10 @@
 import readline from 'readline'
-import { IRootStage, rootStageNamesEnum } from '../../stages/root/i-root-stage'
-import { stagesDictionary, promptType, isCommandsEnum, isRootStageName, commandsEnum } from './readline-models'
+import { IRootStage, isRootStageName, rootStageNamesEnum } from '../../stages/root/i-root-stage'
+import { rootStagesDictionary, promptType, isCommandsEnum, commandsEnum } from './readline-models'
 
 // типа singletone, поэтому без interface
 class ReadLineService {
-	private _stages: stagesDictionary = {} as stagesDictionary
+	private _stages: rootStagesDictionary = {} as rootStagesDictionary
 	private _rl: readline.Interface
 	private static _rlOptions = {
 		input: process.stdin,
@@ -24,7 +24,7 @@ class ReadLineService {
 	}
 
 	init = (...rootStages: IRootStage[]): void => {
-		this._stages = [...rootStages].reduce((p, i) => ({ ...p, [i.name]: i }), {} as stagesDictionary)
+		this._stages = [...rootStages].reduce((p, i) => ({ ...p, [i.name]: i }), {} as rootStagesDictionary)
 		this._rl.prompt()
 		this._rl.on('line', this._lineListener)
 	}
@@ -44,7 +44,9 @@ class ReadLineService {
 		const regionNumber = Number.isInteger(+regionNumberValue) && +regionNumberValue > -1 ? +regionNumberValue : undefined
 		const cityNumber = Number.isInteger(+cityNumberValue) && +cityNumberValue > -1 ? +cityNumberValue : undefined
 
-		if (isCommandsEnum(command) && isRootStageName(key)) return { command, key, regionNumber, cityNumber }
+		if (isCommandsEnum(command) && isRootStageName(key)) {
+			return { command, key, regionNumber, cityNumber }
+		}
 	}
 
 	_lineListener = (input: string): void => {

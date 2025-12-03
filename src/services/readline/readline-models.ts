@@ -1,12 +1,12 @@
 import { rootStageNamesEnum, IRootStage } from '../../stages/root/i-root-stage'
 
-export type stagesDictionary = Record<rootStageNamesEnum, IRootStage>
+export type rootStagesDictionary = Record<rootStageNamesEnum, IRootStage>
 
 export type promptType = {
 	key: rootStageNamesEnum
 	command: commandsEnum
-	regionNumber: number | undefined
-	cityNumber: number | undefined
+	regionNumber?: number
+	cityNumber?: number
 }
 
 export enum commandsEnum {
@@ -16,5 +16,3 @@ export enum commandsEnum {
 }
 
 export const isCommandsEnum = (value: string): value is commandsEnum => value in commandsEnum
-
-export const isRootStageName = (value: string): value is rootStageNamesEnum => value in rootStageNamesEnum

@@ -20,3 +20,5 @@ export enum rootStageNamesEnum {
 	rancho = 'rancho',
 	cities = 'cities',
 }
+
+export const isRootStageName = (value: string): value is rootStageNamesEnum => value in rootStageNamesEnum
