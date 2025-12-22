@@ -99,6 +99,7 @@ export default class RootStage implements IRootStage {
 	}
 
 	_errorHandler = async (driver: IDriverService, error: unknown, regionNumber?: number | undefined, cityNumber?: number | undefined) => {
+		console.log(new Date().toLocaleTimeString())
 		console.log(error)
 
 		if (!(error instanceof Error)) {
