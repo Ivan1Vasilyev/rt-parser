@@ -1,7 +1,7 @@
 import { IDriverService } from '../../services/driver/i-driver-service'
 import { ILoggerService } from '../../services/logger/i-logger-service'
 import { ICardStage } from '../card/i-card-stage'
-import { cancelationTokenType, startParamsType } from '../root/i-root-stage'
+import { cancelationTokenType, startParamsType } from '../root/root-stage-models'
 
 export interface ICityStage {
 	go(
@@ -10,7 +10,7 @@ export interface ICityStage {
 		regionName: string,
 		currentRegionIndex: number,
 		cancelationToken: cancelationTokenType,
-		startParams: startParamsType
+		startParams: startParamsType,
 	): Promise<void>
 }
 

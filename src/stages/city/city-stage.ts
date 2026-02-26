@@ -2,10 +2,10 @@ import { By, WebElement } from 'selenium-webdriver'
 import selectors from '../../utils/selectors'
 import { ICardStage } from '../card/i-card-stage'
 import { ILoggerService, logStateEnum } from '../../services/logger/i-logger-service'
-import { cancelationTokenType, startParamsType } from '../root/i-root-stage'
 import { ICityStage } from './i-city-stage'
 import AutoRestartError from '../../errors/auto-restart-error'
 import { IDriverService } from '../../services/driver/i-driver-service'
+import { cancelationTokenType, startParamsType } from '../root/root-stage-models'
 
 export default class CityStage implements ICityStage {
 	protected _isRefreshed: boolean = false

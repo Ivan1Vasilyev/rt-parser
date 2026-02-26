@@ -2,7 +2,7 @@ import { clusterNamesEnum } from './services/cluster/cluster-models'
 import RootStage from './stages/root/root-stage'
 import { getMainConfig, getInternetConfig, getRanchoConfig, getCitiesOnlyConfig } from './utils/page-config'
 import readLineService from './services/readline/readline-service'
-import { rootStageNamesEnum } from './stages/root/i-root-stage'
+import { rootStageNamesEnum } from './stages/root/root-stage-models'
 
 const east = clusterNamesEnum.east // Восток
 const north = clusterNamesEnum.north // Север

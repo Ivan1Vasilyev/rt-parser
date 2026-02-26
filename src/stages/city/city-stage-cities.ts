@@ -3,8 +3,8 @@ import { citiesDataType, tariffDataKeysEnum } from '../../services/xlsx/xlsx-mod
 import clustersService from '../../services/cluster/cluster-service'
 import { ICityStage } from './i-city-stage'
 import xlsxService from '../../services/xlsx/xlsx-service'
-import { cancelationTokenType, startParamsType } from '../root/i-root-stage'
 import { IDriverService } from '../../services/driver/i-driver-service'
+import { cancelationTokenType, startParamsType } from '../root/root-stage-models'
 
 export default class CityStageCities implements ICityStage {
 	go = async (

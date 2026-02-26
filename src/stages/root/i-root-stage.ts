@@ -1,3 +1,5 @@
+import { rootStageNamesEnum, cancelationTokenType, startParamsType } from './root-stage-models'
+
 export interface IRootStage {
 	name: rootStageNamesEnum
 	cancelationToken: cancelationTokenType
@@ -6,19 +8,3 @@ export interface IRootStage {
 	start(startParams: startParamsType): void
 	stop(): void
 }
-
-export type startParamsType = {
-	regionNumber?: number | undefined
-	cityNumber?: number | undefined
-}
-
-export type cancelationTokenType = { isInterrupted: Boolean }
-
-export enum rootStageNamesEnum {
-	main = 'main',
-	internet = 'internet',
-	rancho = 'rancho',
-	cities = 'cities',
-}
-
-export const isRootStageName = (value: string): value is rootStageNamesEnum => value in rootStageNamesEnum

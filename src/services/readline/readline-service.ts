@@ -1,7 +1,8 @@
 import readline from 'readline'
-import { IRootStage, isRootStageName, rootStageNamesEnum } from '../../stages/root/i-root-stage'
+import { IRootStage } from '../../stages/root/i-root-stage'
 import { rootStagesDictionary, promptType, isCommandsEnum, commandsEnum } from './readline-models'
 import { IReadlineService } from './i-readline-service'
+import { isRootStageName, rootStageNamesEnum } from '../../stages/root/root-stage-models'
 
 class ReadLineService implements IReadlineService {
 	private _stages: rootStagesDictionary = {} as rootStagesDictionary

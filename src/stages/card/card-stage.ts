@@ -4,8 +4,8 @@ import selectors from '../../utils/selectors'
 import clusterService from '../../services/cluster/cluster-service'
 import { tariffDataKeysEnum, tariffDataType } from '../../services/xlsx/xlsx-models'
 import xlsxService from '../../services/xlsx/xlsx-service'
-import { cancelationTokenType } from '../root/i-root-stage'
 import { IDriverService } from '../../services/driver/i-driver-service'
+import { cancelationTokenType } from '../root/root-stage-models'
 
 type tariffInfoType = {
 	tariffInfo: string

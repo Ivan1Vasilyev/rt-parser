@@ -5,7 +5,8 @@ import { ILoggerService, logStateEnum } from '../../services/logger/i-logger-ser
 import LoggerService from '../../services/logger/logger-service'
 import { pageConfig } from '../../utils/page-config'
 import { IRegionStage } from '../region/i-region-stage'
-import { IRootStage, cancelationTokenType, rootStageNamesEnum, startParamsType } from './i-root-stage'
+import { IRootStage } from './i-root-stage'
+import { cancelationTokenType, rootStageNamesEnum, startParamsType } from './root-stage-models'
 
 export default class RootStage implements IRootStage {
 	private _path: string
