@@ -5,7 +5,7 @@ import { ICardStage } from '../card/i-card-stage'
 import { ILoggerService, logStateEnum } from '../../services/logger/i-logger-service'
 import { cancelationTokenType, startParamsType } from '../root/i-root-stage'
 import { ICityStage } from './i-city-stage'
-import AutoRestartError from '../../error/auto-restart-error'
+import AutoRestartError from '../../errors/auto-restart-error'
 import { IDriverService } from '../../services/driver/i-driver-service'
 
 export default class CityStage implements ICityStage {

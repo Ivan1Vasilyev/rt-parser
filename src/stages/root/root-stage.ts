@@ -1,4 +1,4 @@
-import AutoRestartError from '../../error/auto-restart-error'
+import AutoRestartError from '../../errors/auto-restart-error'
 import DriverService from '../../services/driver/driver-service'
 import { IDriverService } from '../../services/driver/i-driver-service'
 import { ILoggerService, logStateEnum } from '../../services/logger/i-logger-service'

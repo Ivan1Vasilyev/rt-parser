@@ -6,7 +6,7 @@ import { cancelationTokenType, startParamsType } from '../root/i-root-stage'
 import { ICityStage } from '../city/i-city-stage'
 import { IRegionStage } from './i-region-stage'
 import { IDriverService } from '../../services/driver/i-driver-service'
-import AutoRestartError from '../../error/auto-restart-error'
+import AutoRestartError from '../../errors/auto-restart-error'
 
 export default class RegionStage implements IRegionStage {
 	private _cityStage: ICityStage
