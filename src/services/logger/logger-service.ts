@@ -21,12 +21,7 @@ export default class LoggerService implements ILoggerService {
 			fs.mkdirSync(this._LOGS_DIRECTORY, { recursive: true })
 		}
 
-		this.logStart()
-	}
-
-	private async logStart() {
-		await this.log('===============================')
-		await this.log('Начали')
+		this.log('===============================\nНачали')
 	}
 
 	public async log(message: string, state: logStateEnum = logStateEnum.default) {
