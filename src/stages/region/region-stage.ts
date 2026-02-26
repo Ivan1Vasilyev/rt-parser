@@ -45,7 +45,7 @@ export default class RegionStage implements IRegionStage {
 				if (this._filteredRegions.length > 0 && !this._filteredRegions.some((r: string) => regionName.includes(r))) continue
 				if (filteredRegionCounter !== null) filteredRegionCounter++
 
-				this._logger.log('регион: ' + regionName)
+				await this._logger.log('регион: ' + regionName)
 
 				await region.click()
 				await driver.sleep(3000)
@@ -56,8 +56,8 @@ export default class RegionStage implements IRegionStage {
 
 				const citiesLength = (await driver.findArray(selectors.cities)).length
 				if (citiesLength == 0) {
-					this._logger.log(`В регионе ${regionName} не загрузились города`, logStateEnum.warning)
-					this._logger.log(`Индекс региона: ${i}`, logStateEnum.warning)
+					await this._logger.log(`В регионе ${regionName} не загрузились города`, logStateEnum.warning)
+					await this._logger.log(`Индекс региона: ${i}`, logStateEnum.warning)
 
 					await driver.refresh()
 					await driver.sleep(3000)
@@ -73,7 +73,7 @@ export default class RegionStage implements IRegionStage {
 				await this._cityStage.go(driver, citiesLength, regionName, i, cancelationToken, { regionNumber, cityNumber })
 				if (cancelationToken.isInterrupted) return
 
-				this._logger.log(`сбор данных по региону ${regionName} завершён. ${filteredRegionCounter ?? i + 1} из ${filteredRegionsLength}`)
+				await this._logger.log(`сбор данных по региону ${regionName} завершён. ${filteredRegionCounter ?? i + 1} из ${filteredRegionsLength}`)
 			} catch (error) {
 				if (error instanceof AutoRestartError) {
 					throw error

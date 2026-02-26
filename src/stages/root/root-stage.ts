@@ -92,7 +92,7 @@ export default class RootStage implements IRootStage {
 		await driver.quit()
 
 		const message = this.cancelationToken.isInterrupted ? 'Прервано' : 'Завершено'
-		this._logger.log(message)
+		await this._logger.log(message)
 
 		this.cancelationToken.isInterrupted = false
 		this._isOnWork = false
@@ -109,18 +109,18 @@ export default class RootStage implements IRootStage {
 
 		const isBubbleError = error instanceof AutoRestartError
 
-		const fixedRegionNumber = isBubbleError ? error.regionNumber : regionNumber
-		const fixedCityNumber = isBubbleError ? error.cityNumber : cityNumber
+		const fixedRegionNumber = isBubbleError ? error.regionNumber : (regionNumber ?? 0)
+		const fixedCityNumber = isBubbleError ? error.cityNumber : (cityNumber ?? 0)
 
-		this._logger.log('я упал...', logStateEnum.error)
-		this._logger.log(error.toString(), logStateEnum.error)
-		this._logger.log(`для продолжения - регион, город: ${fixedRegionNumber} ${fixedCityNumber}`, logStateEnum.warning)
+		await this._logger.log('я упал...', logStateEnum.error)
+		await this._logger.log(error.toString(), logStateEnum.error)
+		await this._logger.log(`для продолжения - регион, город: ${fixedRegionNumber} ${fixedCityNumber}`, logStateEnum.warning)
 
 		if (error.name === 'NoSuchWindowError') {
-			this._logger.log('было закрыто окно браузера', logStateEnum.warning)
+			await this._logger.log('было закрыто окно браузера', logStateEnum.warning)
 		} else {
 			if (error.message.includes('EBUSY')) {
-				this._logger.log(`В момент внесения записи файл .xslx был открыт`, logStateEnum.warning)
+				await this._logger.log(`В момент внесения записи файл .xslx был открыт`, logStateEnum.warning)
 			}
 
 			await driver.quit()

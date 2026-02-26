@@ -91,7 +91,7 @@ export default class DriverService implements IDriverService {
 				if (isElementLocated) break
 			} catch (e) {
 				await this.refresh()
-				logger.log(`Перезагрузка. Место: ${place}`, logStateEnum.warning)
+				await logger.log(`Перезагрузка. Место: ${place}`, logStateEnum.warning)
 				await this.sleep(5000)
 				await action()
 			}

@@ -27,7 +27,7 @@ export default class CityStage implements ICityStage {
 		regionName: string,
 		currentRegionIndex: number,
 		cancelationToken: cancelationTokenType,
-		{ regionNumber, cityNumber }: startParamsType
+		{ regionNumber, cityNumber }: startParamsType,
 	) => {
 		for (let i = 0; i < citiesLength; i++) {
 			try {
@@ -43,7 +43,7 @@ export default class CityStage implements ICityStage {
 				if (cancelationToken.isInterrupted) return
 
 				if (isNoData) {
-					this._logger.log(`в ${this._cityName} нет тарифов. ${i + 1} из ${citiesLength}`, logStateEnum.warning)
+					await this._logger.log(`в ${this._cityName} нет тарифов. ${i + 1} из ${citiesLength}`, logStateEnum.warning)
 				} else {
 					const cardsContainer = await this._getCardsContainer(driver)
 
@@ -53,7 +53,7 @@ export default class CityStage implements ICityStage {
 
 					if (cancelationToken.isInterrupted) return
 
-					this._logger.log(`сбор данных в ${this._cityName} завершён. ${i + 1} из ${citiesLength}`)
+					await this._logger.log(`сбор данных в ${this._cityName} завершён. ${i + 1} из ${citiesLength}`)
 				}
 
 				await driver.openRegions(this._logger)
@@ -130,7 +130,7 @@ export default class CityStage implements ICityStage {
 
 			if (counter > 8) {
 				await driver.refresh()
-				this._logger.log(`перезагрузка на тарифах: ${this._cityName}`, logStateEnum.warning)
+				await this._logger.log(`перезагрузка на тарифах: ${this._cityName}`, logStateEnum.warning)
 				this._isRefreshed = true
 				counter = 0
 				index--

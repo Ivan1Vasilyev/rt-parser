@@ -7,5 +7,5 @@ export const enum logStateEnum {
 export type statesType = Record<logStateEnum, string>
 
 export interface ILoggerService {
-	log(message: string, state?: logStateEnum): void
+	log(message: string, state?: logStateEnum): Promise<void>
 }

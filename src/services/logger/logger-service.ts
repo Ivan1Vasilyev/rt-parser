@@ -7,7 +7,6 @@ export default class LoggerService implements ILoggerService {
 	private _LOGS_DIRECTORY: string = './logs'
 	private _logFileName: string
 	private _logFilePath: any
-	private _logs: string = ''
 	private _states: statesType = {
 		[logStateEnum.error]: 'ERROR! ',
 		[logStateEnum.warning]: 'WARNING! ',
@@ -21,15 +20,21 @@ export default class LoggerService implements ILoggerService {
 		if (!fs.existsSync(this._LOGS_DIRECTORY)) {
 			fs.mkdirSync(this._LOGS_DIRECTORY, { recursive: true })
 		}
+
+		this.logStart()
 	}
 
-	log(message: string, state: logStateEnum = logStateEnum.default) {
+	private async logStart() {
+		await this.log('===============================')
+		await this.log('Начали')
+	}
+
+	public async log(message: string, state: logStateEnum = logStateEnum.default) {
 		const timestamp = new Date().toLocaleTimeString()
 		const logMessage = `[${timestamp}] ${this._states[state]}${message}\n`
 
-		// пишем файл вверх, потому что IDE не хочет сама скролить файл вниз
-		this._logs = logMessage + this._logs
-
-		fs.writeFileSync(this._logFilePath, this._logs)
+		// пишем снизу вверх, потому что IDE не хочет сама скролить файл вниз
+		const logs = await fs.promises.readFile(this._logFilePath)
+		await fs.promises.writeFile(this._logFilePath, logMessage + logs)
 	}
 }
