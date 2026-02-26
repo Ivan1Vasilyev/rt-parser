@@ -1,7 +1,8 @@
 import { clustersType, clusterNamesEnum } from './cluster-models'
+import { IClusterService } from './i-cluster-service'
 
 // типа singletone, поэтому без interface
-class ClusterService {
+class ClusterService implements IClusterService {
 	_eastRegions = [
 		'Алтай',
 		'Алтайский',
@@ -106,4 +107,4 @@ class ClusterService {
 	}
 }
 
-export default new ClusterService()
+export default new ClusterService() as IClusterService

@@ -1,9 +1,9 @@
 import readline from 'readline'
 import { IRootStage, isRootStageName, rootStageNamesEnum } from '../../stages/root/i-root-stage'
 import { rootStagesDictionary, promptType, isCommandsEnum, commandsEnum } from './readline-models'
+import { IReadlineService } from './i-readline-service'
 
-// типа singletone, поэтому без interface
-class ReadLineService {
+class ReadLineService implements IReadlineService {
 	private _stages: rootStagesDictionary = {} as rootStagesDictionary
 	private _rl: readline.Interface
 	private static _rlOptions = {
@@ -95,4 +95,4 @@ class ReadLineService {
 	}
 }
 
-export default new ReadLineService()
+export default new ReadLineService() as IReadlineService

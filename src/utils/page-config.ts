@@ -41,7 +41,6 @@ export const getRanchoConfig = (clusters: clusterNamesEnum[]): pageConfig => ({
 	regionStageClass: RegionStage,
 	cityStageClass: CityStageInternet,
 	cardStageClass: CardStageRancho,
-
 	clusters,
 })
 

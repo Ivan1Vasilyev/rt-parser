@@ -1,11 +1,11 @@
 import { WebElement } from 'selenium-webdriver'
-import DriverService from '../../services/driver/driver-service'
 import { ICardStage } from './i-card-stage'
 import selectors from '../../utils/selectors'
-import clustersService from '../../services/cluster/cluster-service'
+import clusterService from '../../services/cluster/cluster-service'
 import { tariffDataKeysEnum, tariffDataType } from '../../services/xlsx/xlsx-models'
 import xlsxService from '../../services/xlsx/xlsx-service'
 import { cancelationTokenType } from '../root/i-root-stage'
+import { IDriverService } from '../../services/driver/i-driver-service'
 
 type tariffInfoType = {
 	tariffInfo: string
@@ -35,14 +35,14 @@ export default class CardStage implements ICardStage {
 		return ''
 	}
 
-	protected _parsePrices = async (driver: DriverService, card: WebElement): Promise<pricesType> => {
+	protected _parsePrices = async (driver: IDriverService, card: WebElement): Promise<pricesType> => {
 		const oldPriceValue = (await driver.getText(card, this._oldPriceSelector))?.replace(/\s/g, '')
 		const priceValue = (await driver.getText(card, this._priceSelector))?.replace(/\s/g, '')
 
 		return oldPriceValue && priceValue !== '' ? { promoPrice: priceValue, price: oldPriceValue } : { promoPrice: '', price: oldPriceValue || priceValue }
 	}
 
-	protected _parseTariffInfo = async (driver: DriverService, card: WebElement): Promise<tariffInfoType> => {
+	protected _parseTariffInfo = async (driver: IDriverService, card: WebElement): Promise<tariffInfoType> => {
 		let tariffInfo = ''
 		let routerForRent = ''
 		let TVBoxForRent = ''
@@ -101,7 +101,7 @@ export default class CardStage implements ICardStage {
 		return { tariffInfo: tariffInfo.trim(), routerForRent, TVBoxForRent, TVBoxToBuy }
 	}
 
-	protected _parsePriceAndDiscountInfo = async (driver: DriverService, card: WebElement, tariffInfo: string): Promise<priceInfoType> => {
+	protected _parsePriceAndDiscountInfo = async (driver: IDriverService, card: WebElement, tariffInfo: string): Promise<priceInfoType> => {
 		const discountMark = (await driver.findArray(selectors.discountMarkText, card))[0]
 		if (discountMark) {
 			const discountMarkText = await discountMark.getText()
@@ -123,7 +123,7 @@ export default class CardStage implements ICardStage {
 		return { discountDuration: '', priceInfo: '', discountMark: '' }
 	}
 
-	protected _parseOffers = async (driver: DriverService, card: WebElement): Promise<offersType> => {
+	protected _parseOffers = async (driver: IDriverService, card: WebElement): Promise<offersType> => {
 		let speed = '',
 			interactiveTV = '',
 			GB = '',
@@ -153,14 +153,14 @@ export default class CardStage implements ICardStage {
 		return { speed, interactiveTV, GB, minutes, SMS }
 	}
 
-	protected _getTariffName = async (driver: DriverService, webElement: WebElement): Promise<string> => {
+	protected _getTariffName = async (driver: IDriverService, webElement: WebElement): Promise<string> => {
 		return await driver.getText(webElement, this._tariffNameSelector)
 	}
 
-	go = async (driver: DriverService, cardsContainer: WebElement, cityName: string, regionName: string, cancelationToken: cancelationTokenType) => {
+	go = async (driver: IDriverService, cardsContainer: WebElement, cityName: string, regionName: string, cancelationToken: cancelationTokenType) => {
 		const tariffData = [] as tariffDataType[]
 		const tariffs = await driver.findArray(selectors.tariffs)
-		const cluster = clustersService.getClusterName(regionName)
+		const cluster = clusterService.getClusterName(regionName)
 
 		for (let i = 0; i < tariffs.length; i++) {
 			if (cancelationToken.isInterrupted) return

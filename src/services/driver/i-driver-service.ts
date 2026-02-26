@@ -1,14 +1,18 @@
-import { WebElement } from 'selenium-webdriver'
+import { Locator, WebElement, WebElementCondition, WebElementPromise } from 'selenium-webdriver'
 import { ILoggerService } from '../logger/i-logger-service'
 
-const delegatedMethodNames = ['get', 'maximize', 'sleep', 'findElements', 'findElement', 'wait', 'quit', 'refresh', 'scroll'] as const
-type PromiseMethods<T extends readonly string[]> = {
-	[K in T[number]]: (...args: any[]) => Promise<any>
-}
-
-type driverDelegatedMethods = PromiseMethods<typeof delegatedMethodNames>
-
-export interface IDriverService extends driverDelegatedMethods {
+export interface IDriverService {
+	// методы, делегированные из WebDriver
+	get(url: string): Promise<void>
+	maximize(): Promise<void>
+	sleep(bound: number): Promise<void>
+	findElements(locator: Locator): Promise<WebElement[]>
+	findElement(locator: Locator): Promise<WebElement>
+	wait(condition: WebElementCondition, timeout?: number, message?: string, pollTimeout?: number): Promise<WebElement>
+	quit(): Promise<void>
+	refresh(): Promise<void>
+	scroll(deltaY: number): Promise<unknown>
+	// кастомные
 	findArray(selector: string, webElement?: WebElement): Promise<WebElement[]>
 	getText(webElement: WebElement, selector: string): Promise<string>
 	goNextCity(logger: ILoggerService, region: WebElement, regionIndex?: number): Promise<void>

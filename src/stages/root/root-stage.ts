@@ -1,5 +1,5 @@
 import AutoRestartError from '../../errors/auto-restart-error'
-import DriverService from '../../services/driver/driver-service'
+import createDriver from '../../services/driver/driver-service'
 import { IDriverService } from '../../services/driver/i-driver-service'
 import { ILoggerService, logStateEnum } from '../../services/logger/i-logger-service'
 import LoggerService from '../../services/logger/logger-service'
@@ -70,7 +70,7 @@ export default class RootStage implements IRootStage {
 
 	go = async (regionNumber?: number, cityNumber?: number) => {
 		this._isOnWork = true
-		const driver = new DriverService()
+		const driver = createDriver()
 
 		try {
 			await this._openWindow(driver)

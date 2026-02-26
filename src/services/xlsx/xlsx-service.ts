@@ -2,9 +2,9 @@ import fs from 'fs'
 import path from 'path'
 import XLSX from 'xlsx'
 import { tariffDataType, citiesDataType, tariffDataKeysEnum } from './xlsx-models'
+import { IXlsxService } from './i-xlsx-service'
 
-// типа singletone, поэтому без interface
-class XlsxService {
+class XlsxService implements IXlsxService {
 	_TARIFFS_SHEET_NAME: string = 'Тарифы'
 	_CITIES_SHEET_NAME: string = 'Индексы'
 	_workbook: XLSX.WorkBook
@@ -62,4 +62,5 @@ class XlsxService {
 	}
 }
 
-export default new XlsxService('РТ тарифы')
+// типа singletone
+export default new XlsxService('РТ тарифы') as IXlsxService

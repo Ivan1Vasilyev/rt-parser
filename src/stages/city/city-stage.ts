@@ -1,6 +1,5 @@
 import { By, WebElement } from 'selenium-webdriver'
 import selectors from '../../utils/selectors'
-import DriverService from '../../services/driver/driver-service'
 import { ICardStage } from '../card/i-card-stage'
 import { ILoggerService, logStateEnum } from '../../services/logger/i-logger-service'
 import { cancelationTokenType, startParamsType } from '../root/i-root-stage'
@@ -22,7 +21,7 @@ export default class CityStage implements ICityStage {
 	}
 
 	go = async (
-		driver: DriverService,
+		driver: IDriverService,
 		citiesLength: number,
 		regionName: string,
 		currentRegionIndex: number,

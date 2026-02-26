@@ -4,8 +4,11 @@ import selectors from '../../utils/selectors'
 import { ILoggerService, logStateEnum } from '../logger/i-logger-service'
 import { IDriverService } from './i-driver-service'
 
-// типа scope, но не scope
-export default class DriverService implements IDriverService {
+// на каждый Way свой экземпляр
+const createDriver = (): IDriverService => new DriverService()
+export default createDriver
+
+class DriverService implements IDriverService {
 	private _driver: ThenableWebDriver
 
 	constructor() {
