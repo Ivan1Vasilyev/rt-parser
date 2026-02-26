@@ -1,4 +1,4 @@
-import { startParamsType } from '../stages/root/i-root-stage'
+import { startParamsType } from '../stages/root/root-stage-models'
 
 export default class AutoRestartError extends Error {
 	regionNumber: number | undefined

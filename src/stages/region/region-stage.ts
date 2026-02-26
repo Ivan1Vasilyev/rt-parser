@@ -2,11 +2,11 @@ import selectors from '../../utils/selectors'
 import clustersService from '../../services/cluster/cluster-service'
 import { ILoggerService, logStateEnum } from '../../services/logger/i-logger-service'
 import { clusterNamesEnum } from '../../services/cluster/cluster-models'
-import { cancelationTokenType, startParamsType } from '../root/i-root-stage'
 import { ICityStage } from '../city/i-city-stage'
 import { IRegionStage } from './i-region-stage'
 import { IDriverService } from '../../services/driver/i-driver-service'
 import AutoRestartError from '../../errors/auto-restart-error'
+import { cancelationTokenType, startParamsType } from '../root/root-stage-models'
 
 export default class RegionStage implements IRegionStage {
 	private _cityStage: ICityStage
