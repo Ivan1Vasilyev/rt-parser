@@ -108,10 +108,10 @@ export default class RootStage implements IRootStage {
 			return
 		}
 
-		const isBubbleError = error instanceof AutoRestartError
+		const isAutoRestartError = error instanceof AutoRestartError
 
-		const fixedRegionNumber = isBubbleError ? error.regionNumber : (regionNumber ?? 0)
-		const fixedCityNumber = isBubbleError ? error.cityNumber : (cityNumber ?? 0)
+		const fixedRegionNumber = isAutoRestartError ? error.regionNumber : (regionNumber ?? 0)
+		const fixedCityNumber = isAutoRestartError ? error.cityNumber : (cityNumber ?? 0)
 
 		await this._logger.log('я упал...', logStateEnum.error)
 		await this._logger.log(error.toString(), logStateEnum.error)
