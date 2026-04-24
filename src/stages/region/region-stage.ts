@@ -21,6 +21,7 @@ export default class RegionStage implements IRegionStage {
 	}
 
 	go = async (driver: IDriverService, cancelationToken: cancelationTokenType, { regionNumber, cityNumber }: startParamsType) => {
+		await driver.closePopup()
 		await driver.acceptCookes()
 		await driver.openRegions(this._logger)
 

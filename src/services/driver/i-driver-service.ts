@@ -17,9 +17,11 @@ export interface IDriverService {
 	getText(webElement: WebElement, selector: string): Promise<string>
 	goNextCity(logger: ILoggerService, region: WebElement, regionIndex?: number): Promise<void>
 	unsafeFind(selector: string, index?: number): Promise<WebElement>
+	safeFind(selector: string, webElement?: WebElement): Promise<WebElement | undefined>
 	acceptCookes(): Promise<void>
 	waitElementLocated(logger: ILoggerService, selector: string, place: string, action?: Function): Promise<void>
 	waitCities(logger: ILoggerService, index: number, place: string): Promise<void>
 	clickCurrentCity(logger: ILoggerService): Promise<void>
 	openRegions(logger: ILoggerService): Promise<void>
+	closePopup(): Promise<void>
 }

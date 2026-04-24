@@ -43,11 +43,11 @@ export default class CardStage implements ICardStage {
 	}
 
 	protected _parseTariffInfo = async (driver: IDriverService, card: WebElement): Promise<tariffInfoType> => {
-		let tariffInfo = ''
 		let routerForRent = ''
 		let TVBoxForRent = ''
 		let TVBoxToBuy = ''
-		const addText = (info: string) => {
+
+		const checkText = (info: string) => {
 			if (/роутер/i.test(info)) {
 				const splittedInfo = info.split('\n')
 				routerForRent = this._getDigits(splittedInfo[0])
@@ -59,68 +59,62 @@ export default class CardStage implements ICardStage {
 			if (/тв-приставка/i.test(info)) {
 				TVBoxToBuy = this._getDigits(info)
 			}
-			tariffInfo += info ? `${info} ` : ''
 		}
 
-		const iterateInInfo = async (button?: WebElement) => {
-			if (button) {
-				await button.click()
-				await driver.sleep(1000)
+		const iterateInInfo = async (infoItem: WebElement, i: number) => {
+			const title = await driver.getText(infoItem, '.rt-tariff-card__info-tag')
+			const text = await driver.getText(infoItem, '.rt-tariff-card__info-text')
+
+			checkText(text)
+
+			return `${title}: ${text}`
+		}
+
+		const infoBlock = await driver.safeFind(selectors.info, card)
+		if (!infoBlock) return { tariffInfo: '', routerForRent, TVBoxForRent, TVBoxToBuy }
+
+		const infoButton = await driver.safeFind('.rt-tariff-card__info-item--show-all', infoBlock)
+		let tariffInfo = ''
+
+		if (infoButton) {
+			await infoButton.click()
+			await driver.sleep(300)
+			const infoItems = await driver.findArray('.card-info-dialog .rt-tariff-card__info-item')
+			const infoTexts = new Set<string>()
+			for (let i = 0; i < infoItems.length; i++) {
+				const infoText = await iterateInInfo(infoItems[i], i)
+				infoTexts.add(infoText)
 			}
 
-			const info = await driver.getText(card, selectors.info)
-
-			addText(info)
-		}
-
-		const isInfoExists = await driver.findArray(selectors.info, card)
-		if (!isInfoExists.length) {
-			return { tariffInfo: tariffInfo.trim(), routerForRent, TVBoxForRent, TVBoxToBuy }
-		}
-
-		await iterateInInfo()
-
-		const goByArrow = await driver.findArray(selectors.goByArrow, card)
-
-		if (goByArrow.length) {
-			while (true) {
-				const arrow = (await driver.findArray(selectors.arrow, card))[0]
-				if (!arrow) break
-				await iterateInInfo(arrow)
-			}
-		}
-
-		const goByTitles = await driver.findArray(selectors.goByTitles, card)
-
-		if (goByTitles.length) {
-			for (let i = 0; i < goByTitles.length; i++) {
-				await iterateInInfo(goByTitles[i])
+			tariffInfo = [...infoTexts.values()].join('<br />')
+		} else {
+			const infoItem = await driver.safeFind('.rt-tariff-card__info-item', infoBlock)
+			if (infoItem) {
+				tariffInfo = await iterateInInfo(infoItem, 100)
 			}
 		}
 
-		return { tariffInfo: tariffInfo.trim(), routerForRent, TVBoxForRent, TVBoxToBuy }
+		return { tariffInfo, routerForRent, TVBoxForRent, TVBoxToBuy }
 	}
 
-	protected _parsePriceAndDiscountInfo = async (driver: IDriverService, card: WebElement, tariffInfo: string): Promise<priceInfoType> => {
-		const discountMark = (await driver.findArray(selectors.discountMarkText, card))[0]
-		if (discountMark) {
-			const discountMarkText = await discountMark.getText()
-			let buttonText = (await driver.getText(card, selectors.buttonText)).trim()
+	protected _parsePriceAndDiscountInfo = async (driver: IDriverService, card: WebElement): Promise<priceInfoType> => {
+		let discountMark = '',
+			priceInfo = ''
 
-			buttonText = /подключить/i.test(buttonText) ? '' : buttonText
-			let priceInfo = discountMarkText.length > 1 && !/топ/i.test(discountMarkText) ? `${buttonText || 'Скидка:'} ${discountMarkText}` : buttonText
-			const discountDuration = /месяц/i.test(buttonText) ? this._getDigits(buttonText) : ''
-			if (!priceInfo) {
-				const matches = tariffInfo.match(this._discountRegex)
-				if (matches) {
-					priceInfo = `${matches[2] || ''} ${matches[3] || ''} со скидкой ${matches[1] || ''}`
-				}
-			}
+		const discountMarkElem = await driver.safeFind(selectors.discountMarkText, card)
 
-			return { discountDuration, priceInfo: priceInfo.trim(), discountMark: '1' }
+		if (discountMarkElem) {
+			discountMark = '1'
 		}
 
-		return { discountDuration: '', priceInfo: '', discountMark: '' }
+		const priceInfoElem = await driver.safeFind('.rt-tariff-card__price-text')
+		if (priceInfoElem) {
+			priceInfo = await priceInfoElem.getText()
+		}
+
+		const discountDuration = /месяц/i.test(priceInfo) ? this._getDigits(priceInfo) : ''
+
+		return { discountDuration, priceInfo: priceInfo.trim(), discountMark }
 	}
 
 	protected _parseOffers = async (driver: IDriverService, card: WebElement): Promise<offersType> => {
@@ -161,18 +155,26 @@ export default class CardStage implements ICardStage {
 		const tariffData = [] as tariffDataType[]
 		const tariffs = await driver.findArray(selectors.tariffs)
 		const cluster = clusterService.getClusterName(regionName)
+		const tariffsArrow = await driver.safeFind(selectors.tariffsArrow, cardsContainer)
+
+		const maxIndex = 16
 
 		for (let i = 0; i < tariffs.length; i++) {
 			if (cancelationToken.isInterrupted) return
 
+			if (tariffsArrow && i > 2 && (tariffs.length < maxIndex || i < Math.max(tariffs.length, maxIndex) - 1)) {
+				await tariffsArrow.click()
+				await driver.sleep(1000)
+			}
+
 			const currentTariffData = xlsxService.getTemplate()
 			const { promoPrice, price } = await this._parsePrices(driver, tariffs[i])
 			const { tariffInfo, routerForRent, TVBoxForRent, TVBoxToBuy } = await this._parseTariffInfo(driver, tariffs[i])
-			const { discountDuration, priceInfo, discountMark } = await this._parsePriceAndDiscountInfo(driver, tariffs[i], tariffInfo)
+			const { discountDuration, priceInfo, discountMark } = await this._parsePriceAndDiscountInfo(driver, tariffs[i])
 			const { speed, interactiveTV, GB, minutes, SMS } = await this._parseOffers(driver, tariffs[i])
 			const tariffName = await this._getTariffName(driver, tariffs[i])
 
-			if (!tariffName.trim()) throw 'нет навания тарифа'
+			if (!tariffName.trim()) throw 'нет названия тарифа'
 
 			currentTariffData[tariffDataKeysEnum.cityName] = cityName
 			currentTariffData[tariffDataKeysEnum.tariffName] = tariffName
@@ -194,12 +196,6 @@ export default class CardStage implements ICardStage {
 			currentTariffData[tariffDataKeysEnum.cluster] = cluster
 
 			tariffData.push(currentTariffData)
-
-			const tariffsArrow = (await driver.findArray(selectors.tariffsArrow, cardsContainer))[0]
-			if (tariffsArrow && ((i > 1 && i <= tariffs.length - 4) || (tariffs.length < 14 && i > 0))) {
-				await tariffsArrow.click()
-				await driver.sleep(2000)
-			}
 		}
 
 		xlsxService.writeTariffsFile(tariffData)

@@ -42,9 +42,9 @@ class DriverService implements IDriverService {
 	}
 
 	getText = async (webElement: WebElement, selector: string) => {
-		const elems = await this.findArray(selector, webElement)
-		if (elems.length) {
-			const text = await elems[0].getText()
+		const elem = await this.safeFind(selector, webElement)
+		if (elem) {
+			const text = await elem.getText()
 			return text
 		}
 
@@ -60,6 +60,11 @@ class DriverService implements IDriverService {
 			const region = await this.unsafeFind(selectors.regions, regionIndex)
 			await region.click()
 		})
+	}
+
+	safeFind = async (selector: string, webElement?: WebElement) => {
+		const target = await this.findArray(selector, webElement)
+		return target[0]
 	}
 
 	unsafeFind = async (selector: string, index = 0) => {
@@ -83,6 +88,15 @@ class DriverService implements IDriverService {
 
 		if (cookieConfirm.length) {
 			await cookieConfirm[0].click()
+			await this.sleep(500)
+		}
+	}
+
+	closePopup = async () => {
+		const popupButton = await this.findArray(selectors.popupCloseButton)
+
+		if (popupButton.length) {
+			await popupButton[0].click()
 			await this.sleep(500)
 		}
 	}
