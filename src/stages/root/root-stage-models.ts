@@ -7,9 +7,12 @@ export type cancelationTokenType = { isInterrupted: Boolean }
 
 export enum rootStageNamesEnum {
 	main = 'main',
+	convergent = 'convergent',
+	mobile = 'mobile',
+	internetTv = 'internetTv',
 	internet = 'internet',
 	rancho = 'rancho',
-	cities = 'cities',
+	cities = 'cities'
 }
 
 export const isRootStageName = (value: string): value is rootStageNamesEnum => value in rootStageNamesEnum

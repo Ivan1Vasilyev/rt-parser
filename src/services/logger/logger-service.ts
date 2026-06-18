@@ -10,7 +10,7 @@ export default class LoggerService implements ILoggerService {
 	private _states: statesType = {
 		[logStateEnum.error]: 'ERROR! ',
 		[logStateEnum.warning]: 'WARNING! ',
-		[logStateEnum.default]: '',
+		[logStateEnum.default]: ''
 	}
 
 	constructor(logFileName: string = 'no_name') {
@@ -19,6 +19,10 @@ export default class LoggerService implements ILoggerService {
 
 		if (!fs.existsSync(this._LOGS_DIRECTORY)) {
 			fs.mkdirSync(this._LOGS_DIRECTORY, { recursive: true })
+		}
+
+		if (!fs.existsSync(this._logFilePath)) {
+			fs.writeFileSync(this._logFilePath, '')
 		}
 
 		this.log('===============================\nНачали')

@@ -6,7 +6,7 @@ export default class CardStageRancho extends CardStageInternet {
 	protected override _setStep = () => false
 
 	protected override _getTariffName = async (driver: IDriverService, card: WebElement): Promise<string> => {
-		const tariffName = await driver.getText(card, this._tariffNameSelector)
+		const tariffName = await super._getTariffName(driver, card)
 		return tariffName.includes('Свой дом') ? tariffName : `${tariffName}. Свой дом`
 	}
 }

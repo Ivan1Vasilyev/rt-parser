@@ -56,6 +56,7 @@ export default class CardStage implements ICardStage {
 				}
 				return
 			}
+
 			if (/тв-приставка/i.test(info)) {
 				TVBoxToBuy = this._getDigits(info)
 			}
@@ -78,7 +79,8 @@ export default class CardStage implements ICardStage {
 
 		if (infoButton) {
 			await infoButton.click()
-			await driver.sleep(300)
+			await driver.sleep(700)
+
 			const infoItems = await driver.findArray('.card-info-dialog .rt-tariff-card__info-item')
 			const infoTexts = new Set<string>()
 			for (let i = 0; i < infoItems.length; i++) {
@@ -147,20 +149,22 @@ export default class CardStage implements ICardStage {
 		return { speed, interactiveTV, GB, minutes, SMS }
 	}
 
-	protected _getTariffName = async (driver: IDriverService, webElement: WebElement): Promise<string> => {
-		return await driver.getText(webElement, this._tariffNameSelector)
+	protected async _getTariffName(driver: IDriverService, webElement: WebElement): Promise<string> {
+		const text = await driver.getText(webElement, this._tariffNameSelector)
+		return text.replace(/\s+/g, ' ')
 	}
 
 	go = async (driver: IDriverService, cardsContainer: WebElement, cityName: string, regionName: string, cancelationToken: cancelationTokenType) => {
 		const tariffData = [] as tariffDataType[]
 		const tariffs = await driver.findArray(selectors.tariffs)
 		const cluster = clusterService.getClusterName(regionName)
-		const tariffsArrow = await driver.safeFind(selectors.tariffsArrow, cardsContainer)
 
 		const maxIndex = 16
 
 		for (let i = 0; i < tariffs.length; i++) {
 			if (cancelationToken.isInterrupted) return
+
+			const tariffsArrow = await driver.safeFind(selectors.tariffsArrow, cardsContainer)
 
 			if (tariffsArrow && i > 2 && (tariffs.length < maxIndex || i < Math.max(tariffs.length, maxIndex) - 1)) {
 				await tariffsArrow.click()

@@ -31,7 +31,7 @@ class ClusterService implements IClusterService {
 		'Ханты-Мансийский',
 		'Челябинская',
 		'Чукотский',
-		'Ямало-Ненецкий',
+		'Ямало-Ненецкий'
 	]
 
 	_southRegions = [
@@ -41,9 +41,9 @@ class ClusterService implements IClusterService {
 		'Волгоградская',
 		'Дагестан',
 		'Ингушетия',
-		'Кабардино Балкарская',
+		'Кабардино-Балкарская',
 		'Калмыкия',
-		'Карачаево Черкесская',
+		'Карачаево-Черкесская',
 		'Кировская',
 		'Краснодарский край',
 		'Марий Эл',
@@ -59,7 +59,7 @@ class ClusterService implements IClusterService {
 		'Татарстан',
 		'Удмуртская',
 		'Ульяновская',
-		'Чувашская',
+		'Чувашская'
 	]
 
 	_northRegions = ['Архангельская', 'Вологодская', 'Калининградская', 'Карелия', 'Коми', 'Ленинградская', 'Мурманская', 'Новгородская', 'Псковская', 'Санкт-Петербург']
@@ -82,7 +82,7 @@ class ClusterService implements IClusterService {
 		'Тамбовская',
 		'Тверская',
 		'Тульская',
-		'Ярославская',
+		'Ярославская'
 	]
 
 	_clusters: clustersType = {
@@ -90,7 +90,7 @@ class ClusterService implements IClusterService {
 		[clusterNamesEnum.north]: this._northRegions,
 		[clusterNamesEnum.south]: this._southRegions,
 		[clusterNamesEnum.westCenterMoscow]: this._westCenterMoscowRegions,
-		[clusterNamesEnum.unknown]: [],
+		[clusterNamesEnum.unknown]: []
 	}
 
 	getRegions = (clusterNames: clusterNamesEnum[]): string[] =>

@@ -20,12 +20,36 @@ export type pageConfig = {
 
 // clusters формируем в app.ts, просто потому что он 1 на всех и там удобнее
 
+export const getConvergentConfig = (clusters: clusterNamesEnum[]): pageConfig => ({
+	path: 'homeinternet/internet_tv_mobile',
+	regionStageClass: RegionStage,
+	cityStageClass: CityStage,
+	cardStageClass: CardStage,
+	clusters
+})
+
+export const getMobileConfig = (clusters: clusterNamesEnum[]): pageConfig => ({
+	path: 'homeinternet/internet_mobile',
+	regionStageClass: RegionStage,
+	cityStageClass: CityStage,
+	cardStageClass: CardStage,
+	clusters
+})
+
+export const getInternetTvConfig = (clusters: clusterNamesEnum[]): pageConfig => ({
+	path: 'homeinternet/internet_tv',
+	regionStageClass: RegionStage,
+	cityStageClass: CityStage,
+	cardStageClass: CardStage,
+	clusters
+})
+
 export const getMainConfig = (clusters: clusterNamesEnum[]): pageConfig => ({
 	path: 'packages/tariffs',
 	regionStageClass: RegionStage,
 	cityStageClass: CityStage,
 	cardStageClass: CardStage,
-	clusters,
+	clusters
 })
 
 export const getInternetConfig = (clusters: clusterNamesEnum[]): pageConfig => ({
@@ -33,7 +57,7 @@ export const getInternetConfig = (clusters: clusterNamesEnum[]): pageConfig => (
 	regionStageClass: RegionStage,
 	cityStageClass: CityStageInternet,
 	cardStageClass: CardStageInternet,
-	clusters,
+	clusters
 })
 
 export const getRanchoConfig = (clusters: clusterNamesEnum[]): pageConfig => ({
@@ -41,7 +65,7 @@ export const getRanchoConfig = (clusters: clusterNamesEnum[]): pageConfig => ({
 	regionStageClass: RegionStage,
 	cityStageClass: CityStageInternet,
 	cardStageClass: CardStageRancho,
-	clusters,
+	clusters
 })
 
 export const getCitiesOnlyConfig = (clusters: clusterNamesEnum[]): pageConfig => ({
@@ -49,5 +73,5 @@ export const getCitiesOnlyConfig = (clusters: clusterNamesEnum[]): pageConfig =>
 	regionStageClass: RegionStage,
 	cityStageClass: CityStageCities,
 	cardStageClass: CardStage,
-	clusters,
+	clusters
 })
