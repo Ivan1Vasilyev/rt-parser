@@ -11,26 +11,25 @@ const westCenterMoscow = clusterNamesEnum.westCenterMoscow // Запад, Цен
 
 const clusters = [] as clusterNamesEnum[] // если пустой, парсится всё.
 
+const convergentConfig = getConvergentConfig(clusters)
+const internetTvConfig = getInternetTvConfig(clusters)
 const internetWayConfig = getInternetConfig(clusters)
+const mobileConfig = getMobileConfig(clusters)
 const ranchoWayConfig = getRanchoConfig(clusters)
 const citiesOnlyConfig = getCitiesOnlyConfig(clusters)
-const convergentConfig = getConvergentConfig(clusters)
-const mobileConfig = getMobileConfig(clusters)
-const internetTvConfig = getInternetTvConfig(clusters)
 
 const convergentWay = new RootStage(convergentConfig, rootStageNamesEnum.convergent)
-const mobileWay = new RootStage(mobileConfig, rootStageNamesEnum.mobile)
 const internetTvWay = new RootStage(internetTvConfig, rootStageNamesEnum.internetTv)
 const internetWay = new RootStage(internetWayConfig, rootStageNamesEnum.internet)
+const mobileWay = new RootStage(mobileConfig, rootStageNamesEnum.mobile)
 const ranchoWay = new RootStage(ranchoWayConfig, rootStageNamesEnum.rancho)
 const citiesOnlyWay = new RootStage(citiesOnlyConfig, rootStageNamesEnum.cities)
 
-readLineService.init(internetWay, ranchoWay, citiesOnlyWay, convergentWay, mobileWay, internetTvWay)
-
-internetWay.go()
-ranchoWay.go()
-// citiesOnlyWay.go()
+readLineService.init(convergentWay, internetTvWay, internetWay, mobileWay, ranchoWay, citiesOnlyWay)
 
 convergentWay.go()
-mobileWay.go()
 internetTvWay.go()
+internetWay.go()
+mobileWay.go()
+ranchoWay.go()
+// citiesOnlyWay.go()
