@@ -10,7 +10,7 @@ class ReadLineService implements IReadlineService {
 	private static _rlOptions = {
 		input: process.stdin,
 		output: process.stdout,
-		prompt: 'Парсер слушает: ',
+		prompt: 'Парсер слушает: '
 	}
 
 	private _startCommandInfo: string
@@ -35,10 +35,9 @@ class ReadLineService implements IReadlineService {
 			0: command,
 			1: key,
 			2: regionNumberValue,
-			3: cityNumberValue,
+			3: cityNumberValue
 		} = input
 			.trim()
-			.toLowerCase()
 			.split(' ')
 			.filter(i => i !== undefined)
 
