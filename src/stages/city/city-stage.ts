@@ -28,10 +28,12 @@ export default class CityStage implements ICityStage {
 		cancelationToken: cancelationTokenType,
 		{ regionNumber, cityNumber }: startParamsType,
 	) => {
-		for (let i = 0; i < citiesLength; i++) {
-			try {
-				if (cityNumber && regionNumber === currentRegionIndex && cityNumber > i) i = cityNumber
+		const initialCityIndex = regionNumber === currentRegionIndex ? (cityNumber ?? 0) : 0
 
+		for (let i = initialCityIndex; i < citiesLength; i++) {
+			let restartCityIndex = i
+
+			try {
 				await this._openCity(driver, cancelationToken, currentRegionIndex, i)
 
 				const { index, isNoTariffs: isNoData } = await this._waitTariffs(driver, cancelationToken, i)
@@ -55,6 +57,10 @@ export default class CityStage implements ICityStage {
 					await this._logger.log(`сбор данных в ${this._cityName} завершён. ${i + 1} из ${citiesLength}`)
 				}
 
+				// Данные текущего города уже собраны. Если ошибка произойдёт при
+				// возврате к списку регионов, после рестарта продолжаем со следующего.
+				restartCityIndex = i + 1
+
 				await driver.openRegions(this._logger)
 
 				if (cancelationToken.isInterrupted) return
@@ -67,7 +73,7 @@ export default class CityStage implements ICityStage {
 			} catch (error) {
 				const message = error instanceof Error ? error.message : String(error)
 
-				throw new AutoRestartError(message, { regionNumber: currentRegionIndex, cityNumber: i })
+				throw new AutoRestartError(message, { regionNumber: currentRegionIndex, cityNumber: restartCityIndex })
 			}
 		}
 	}
